@@ -1,4 +1,4 @@
-export enum Key {
+enum Key {
   Asharp = "A#",
   B = "B",
   C = "C",
@@ -11,3 +11,4 @@ export enum Key {
   G = "G",
   Gsharp = "G#",
 }
+export default Key;

@@ -1,14 +1,11 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import { Key } from "../utils/types/Key";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-
-type Request = {
-  key: Key;
-  tempo: number;
-};
+import { postParams } from "../utils/api";
+import Key from "../utils/types/Key";
+import ParamsRequest from "../utils/types/ParamsRequest";
 
 function Home() {
-  const initialValues: Request = {
+  const initialValues: ParamsRequest = {
     key: Key.C,
     tempo: 120,
   };
@@ -20,8 +17,9 @@ function Home() {
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        console.log(values);
+      onSubmit={async (values, { setSubmitting }) => {
+        const resp = await postParams(values);
+        console.log(resp);
         setSubmitting(false);
       }}
     >
