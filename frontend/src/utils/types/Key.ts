@@ -1,4 +1,4 @@
-enum Key {
+export enum Note {
   Asharp = "A#",
   B = "B",
   C = "C",
@@ -11,4 +11,10 @@ enum Key {
   G = "G",
   Gsharp = "G#",
 }
+export enum Scale {
+  Major = "maj",
+  Minor = "min",
+}
+
+type Key = `${Note}${Scale}`;
 export default Key;

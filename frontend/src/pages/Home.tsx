@@ -1,12 +1,12 @@
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { postParams } from "../utils/api";
-import Key from "../utils/types/Key";
+import { Note, Scale } from "../utils/types/Key";
 import ParamsRequest from "../utils/types/ParamsRequest";
 
 function Home() {
   const initialValues: ParamsRequest = {
-    key: Key.C,
+    key: "C#maj",
     tempo: 120,
   };
   const validationSchema = Yup.object({
@@ -26,10 +26,14 @@ function Home() {
       {({ isSubmitting, errors }) => (
         <Form>
           <Field name="key" as="select">
-            {Object.values(Key).map((val) => (
-              <option key={val} value={val}>
-                {val}
-              </option>
+            {Object.entries(Scale).map(([scale, scaleString]) => (
+              <optgroup key={scale} label={`${scale} Scale`}>
+                {Object.values(Note).map((note) => (
+                  <option key={note} value={`${note}${scaleString}`}>
+                    {note} {scale}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </Field>
 
