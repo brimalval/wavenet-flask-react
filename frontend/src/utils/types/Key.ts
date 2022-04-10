@@ -16,5 +16,4 @@ export enum Scale {
   Minor = "min",
 }
 
-type Key = `${Note}${Scale}`;
-export default Key;
+export type Key = `${Note}${Scale}`;
