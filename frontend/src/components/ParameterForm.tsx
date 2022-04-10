@@ -122,7 +122,11 @@ function ParameterForm() {
           </div>
           <FormHelperText error>{errors.tempo ?? " "}</FormHelperText>
           <div className="flex justify-center">
-            <Button variant="outlined" type="submit" disabled={isSubmitting}>
+            <Button
+              variant="outlined"
+              type="submit"
+              disabled={isSubmitting || Object.keys(errors).length > 0}
+            >
               Submit
             </Button>
           </div>

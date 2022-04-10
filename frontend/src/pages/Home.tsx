@@ -3,7 +3,7 @@ import ParameterForm from "../components/ParameterForm";
 
 function Home() {
   return (
-    <Paper className="w-2/3 mx-auto p-5" elevation={5}>
+    <Paper className="md:w-2/3 sm:w-full mx-auto p-5" elevation={5}>
       <ParameterForm />
     </Paper>
   );
