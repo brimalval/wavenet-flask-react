@@ -1,4 +1,5 @@
 export enum Note {
+  A = "A",
   Asharp = "A#",
   B = "B",
   C = "C",
