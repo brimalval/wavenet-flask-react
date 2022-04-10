@@ -77,6 +77,9 @@ function ParameterForm() {
             onChange={(event, value) => {
               setFieldValue("key", value?.value);
             }}
+            defaultValue={keyOptions.find(
+              (option) => option.value === initialValues.key
+            )}
             groupBy={(option) => (option as KeyOption).scale}
             getOptionLabel={(option) => (option as KeyOption).label}
             renderInput={(params) => (
