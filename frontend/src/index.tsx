@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./utils/global.css";
 import App from "./App";
 import "@fontsource/roboto";
+import "@fontsource/poppins";
+import { StyledEngineProvider } from "@mui/material";
 
 const container = document.getElementById("root");
 if (container === null) {
@@ -11,6 +13,8 @@ if (container === null) {
 const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
-    <App />
+    <StyledEngineProvider injectFirst>
+      <App />
+    </StyledEngineProvider>
   </React.StrictMode>
 );
