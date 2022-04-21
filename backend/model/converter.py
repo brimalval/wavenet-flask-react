@@ -2,32 +2,32 @@ from music21 import note, stream, converter
 from bidict import bidict
 
 
+notes_map = bidict({
+    'C': 0,
+    'C#': 5,
+    'D': 10,
+    'D#': 15,
+    'E': 20,
+    'F': 25,
+    'F#': 30,
+    'G': 35,
+    'G#': 40,
+    'A': 45,
+    'A#': 50,
+    'B': 55,
+})
+duration_map = bidict({
+    'whole': 0,
+    'half': 1,
+    'quarter': 2,
+    'eighth': 3,
+    '16th': 4,
+})
+MAX_NOTE_VAL = 119
+
+
 class Converter:
     # Function to create a music21 stream from a list of notes
-
-    def __init__(self):
-        self.notes_map = bidict({
-            'C': 0,
-            'C#': 5,
-            'D': 10,
-            'D#': 15,
-            'E': 20,
-            'F': 25,
-            'F#': 30,
-            'G': 35,
-            'G#': 40,
-            'A': 45,
-            'A#': 50,
-            'B': 55,
-        })
-        self.duration_map = bidict({
-            'whole': 0,
-            'half': 1,
-            'quarter': 2,
-            'eighth': 3,
-            '16th': 4,
-        })
-        self.MAX_NOTE_VAL = 119
 
     def create_midi_stream(self, notes):
         stream_result = stream.Stream()
