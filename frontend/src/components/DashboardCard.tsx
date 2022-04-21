@@ -5,15 +5,17 @@ type Props = {
   title: string;
   headerElements?: React.ReactNode | React.ReactNode[];
   children?: React.ReactNode | React.ReactNode[];
+  className?: string;
 };
 
 const DashboardCard: React.FC<Props> = ({
   title,
   headerElements,
   children,
+  className
 }) => {
   return (
-    <Paper className="p-3">
+    <Paper className={`p-3 ${className}`}>
       <div className="flex justify-between mb-5">
         <Typography variant="body1" fontWeight="bold">
           {title}
