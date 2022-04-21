@@ -9,6 +9,7 @@ function MainLayout() {
           <Typography
             variant="h6"
             fontWeight="bold"
+            fontFamily="Poppins, sans-serif"
             className="uppercase border-b-2 border-slate-400 inline-block"
             color="white"
           >
@@ -16,7 +17,7 @@ function MainLayout() {
           </Typography>
         </Link>
       </header>
-      <main className="h-[calc(100vh-65px)]">
+      <main className="h-[calc(100vh-65px)] bg-gray-200">
         <Outlet />
       </main>
     </>

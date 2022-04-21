@@ -4,6 +4,7 @@ import "./utils/global.css";
 import App from "./App";
 import "@fontsource/roboto";
 import "@fontsource/poppins";
+import "@fontsource/open-sans";
 import { StyledEngineProvider } from "@mui/material";
 
 const container = document.getElementById("root");
