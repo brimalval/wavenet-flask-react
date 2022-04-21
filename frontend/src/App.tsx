@@ -9,10 +9,18 @@ import NotFound from "./pages/NotFound";
 
 function App() {
   const theme = createTheme({
+    palette: createPalette({
+      primary: {
+        main: "#577B7C",
+      },
+      secondary: {
+        main: "#345556",
+      },
+    }),
     typography: createTypography(createPalette({}), {
       fontFamily: "Open Sans, sans-serif",
-    })
-  })
+    }),
+  });
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>

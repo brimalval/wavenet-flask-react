@@ -1,15 +1,15 @@
 import {
   Autocomplete,
+  Button,
   FormControl,
+  FormHelperText,
   Grid,
   Input,
-  InputLabel,
-  Paper,
   Slider,
   TextField,
   Typography,
 } from "@mui/material";
-import { Formik } from "formik";
+import { Form, Formik } from "formik";
 import DashboardCard from "../components/DashboardCard";
 import { Key, Note, Scale } from "../utils/types/Key";
 
@@ -47,14 +47,15 @@ function Dashboard() {
           key: keyOptions[0],
           sound: SoundOptions.Piano,
           tempo: 120,
+          measureCount: 0,
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log(values);
+          console.log("values", values);
           setSubmitting(false);
         }}
       >
         {({ isSubmitting, setFieldValue, errors, values, handleChange }) => (
-          <form>
+          <Form>
             <Grid container rowSpacing={2}>
               <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
                 <DashboardCard title="Melody Characteristics">
@@ -92,7 +93,7 @@ function Dashboard() {
               </Grid>
 
               <Grid item xs={12} sm={6} md={3} className="md:pr-3">
-                <DashboardCard title="Key">
+                <DashboardCard title="Key" className="h-full">
                   <Autocomplete
                     id="key"
                     defaultValue={keyOptions[0]}
@@ -108,7 +109,6 @@ function Dashboard() {
                         placeholder="Select Key"
                         id="key"
                         error={!!errors.key}
-                        onChange={handleChange}
                         name="key"
                       />
                     )}
@@ -117,8 +117,11 @@ function Dashboard() {
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <DashboardCard title="Rhythm Characteristics">
-                  <Grid container className="mb-2" spacing={4}>
+                <DashboardCard
+                  title="Rhythm Characteristics"
+                  className="h-full"
+                >
+                  <Grid container spacing={4}>
                     <Grid item xs={6} className="flex flex-col space-y-8">
                       <TextField
                         fullWidth
@@ -135,9 +138,24 @@ function Dashboard() {
                         type="number"
                       />
                     </Grid>
-                    <Grid item xs={6}>
-                      <FormControl fullWidth>
-                        <Typography id="tempo">Tempo:</Typography>
+                    <Grid item xs={6} className="flex flex-col justify-between">
+                      <FormControl>
+                        <div className="flex space-x-4">
+                          <Typography id="tempo">Tempo:</Typography>
+                          <Input
+                            id="tempo"
+                            name="tempo"
+                            type="number"
+                            size="small"
+                            value={values.tempo}
+                            onChange={handleChange}
+                            inputProps={{
+                              min: 45,
+                              max: 280,
+                            }}
+                            error={!!errors.tempo}
+                          />
+                        </div>
                         <Slider
                           value={values.tempo}
                           onChange={(event, newValue) => {
@@ -149,13 +167,35 @@ function Dashboard() {
                           min={45}
                           max={280}
                         />
+                        <FormHelperText>{errors.tempo}</FormHelperText>
                       </FormControl>
+
+                      <TextField
+                        fullWidth
+                        label="No. of Measures"
+                        id="measureCount"
+                        name="measureCount"
+                        type="number"
+                        value={values.measureCount}
+                        onChange={handleChange}
+                        error={!!errors.measureCount}
+                      />
                     </Grid>
                   </Grid>
                 </DashboardCard>
               </Grid>
+
+              <Grid item xs={1}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="bg-primary"
+                >
+                  Generate
+                </Button>
+              </Grid>
             </Grid>
-          </form>
+          </Form>
         )}
       </Formik>
     </div>
