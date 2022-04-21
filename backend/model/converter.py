@@ -70,18 +70,23 @@ class Converter:
         tonic = key[:2] if key[1] == "#" else key[0]
         # Get the scale interval by checking if the scale is major or minor
         scale_interval = major_scale_interval if scale == "maj" else minor_scale_interval
-        # Get the tonic note by mapping the tonic to the scale interval
-        tonic_note = notes_map[tonic]
         # Get the scale by mapping the tonic note to the scale interval
         scale = [notes_map[tonic] + interval for interval in scale_interval]
+        # Filter out notes that are out of range
+        scale = [note_int for note_int in scale if note_int <= MAX_NOTE_VAL]
+
         return scale
 
 # Test code
 if __name__ == "__main__":
     testme = Converter()
-    scale = testme.get_scale("Cmaj")
-    print(testme.get_scale("Cmaj"))
-    print("converted", [testme.map_int_to_note(note).name for note in scale])
-    scale = testme.get_scale("Cmin")
-    print(testme.get_scale("Cmin"))
-    print("converted", [testme.map_int_to_note(note).name for note in scale])
+    scale = testme.get_scale("Bmaj")
+    print(testme.get_scale("Bmaj"))
+    converted = [testme.map_int_to_note(item) for item in scale]
+    i = 0
+    for item in converted:
+        print(scale[i], item.fullName)
+        i += 1
+    scale = testme.get_scale("Bmin")
+    print(testme.get_scale("Bmin"))
+    print("converted", [testme.map_int_to_note(item).fullName for item in scale])
