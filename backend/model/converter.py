@@ -24,6 +24,10 @@ duration_map = bidict({
     '16th': 4,
 })
 MAX_NOTE_VAL = 119
+# Distance of each note in the major scale from the tonic note multiplied by 5
+major_scale_interval = [0, 10, 20, 25, 35, 45, 55, 60, 70, 80, 85, 95, 105, 115]
+# Distance of each note in the minor scale from the tonic note multiplied by 5
+minor_scale_interval = [0, 10, 15, 25, 35, 40, 50, 60, 70, 75, 85, 95, 100, 110]
 
 
 class Converter:
@@ -58,3 +62,26 @@ class Converter:
         note_result = note.Note(pitch + str(octave))
         note_result.duration.type = duration
         return note_result
+    
+    def get_scale(self, key):
+        # Last three letters of key are the scale type
+        scale = key[-3:]
+        # First two letters of key are the tonic unless the second letter is a sharp
+        tonic = key[:2] if key[1] == "#" else key[0]
+        # Get the scale interval by checking if the scale is major or minor
+        scale_interval = major_scale_interval if scale == "maj" else minor_scale_interval
+        # Get the tonic note by mapping the tonic to the scale interval
+        tonic_note = notes_map[tonic]
+        # Get the scale by mapping the tonic note to the scale interval
+        scale = [notes_map[tonic] + interval for interval in scale_interval]
+        return scale
+
+# Test code
+if __name__ == "__main__":
+    testme = Converter()
+    scale = testme.get_scale("Cmaj")
+    print(testme.get_scale("Cmaj"))
+    print("converted", [testme.map_int_to_note(note).name for note in scale])
+    scale = testme.get_scale("Cmin")
+    print(testme.get_scale("Cmin"))
+    print("converted", [testme.map_int_to_note(note).name for note in scale])
