@@ -9,6 +9,11 @@ app = Flask(__name__, static_folder="../frontend/build/static",
             template_folder="../frontend/build")
 app.url_map.converters['regex'] = converters.RegexConverter
 
+# Set upload folder
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER') or 'uploads'
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
 # Redirect all requests to the React app's root
 # React handles all the routing
 @app.route("/", defaults={"path": ""})
