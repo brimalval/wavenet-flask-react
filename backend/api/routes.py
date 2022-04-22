@@ -35,7 +35,7 @@ def predict():
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
         result = model.predict(x, length, sequence_length, key, upload_path)
-        results.append({"notes": result, "path": upload_path})
+        results.append({"notes": result, "path": upload_path + ".mid"})
     return jsonify(results)
 
 
