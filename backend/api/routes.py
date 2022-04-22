@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from datetime import datetime
+from flask import Blueprint, jsonify, request, current_app
 from model.model import Model
 import numpy as np
 
@@ -29,8 +30,12 @@ def predict():
     results = []
     for i in range(melody_count):
         x = [np.random.randint(0, output_classes) for _ in range(sequence_length)]
-        result = model.predict(x, length, sequence_length, key)
-        results.append({"notes": result, "path": ""})
+        # Create unique file name for the prediction that includes the key, index, and date
+        filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+        filename = filename.replace("#", "sharp")
+        upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
+        result = model.predict(x, length, sequence_length, key, upload_path)
+        results.append({"notes": result, "path": upload_path})
     return jsonify(results)
 
 
