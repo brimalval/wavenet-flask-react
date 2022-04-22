@@ -1,7 +1,7 @@
-from wavenet import WaveNet
+from model.wavenet import WaveNet
 from tensorflow import keras
 import numpy as np
-from converter import Converter
+from model.converter import Converter
 
 
 class Model:
@@ -46,4 +46,6 @@ class Model:
             x.pop(0)
             x.append(arg_y / 119)
             x_data = np.array(x).reshape(1, sequence_length, 1).astype("float32")
-        return output
+        # TODO: save created midi file
+        self.converter.create_song_from_ints(output)
+        return [self.converter.map_int_to_note(int_note).name for int_note in output]
