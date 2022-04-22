@@ -17,8 +17,15 @@ model = Model(res_channel, skip_channel, stack_size, kernel_size, layer_size, ou
 model.load("model/save_128_256_2_2_4_120_limit_all/weights_only.h5")
 
 
-@api.route('/predict/<string:key>/<int:length>/<int:melody_count>')
-def predict(key, length, melody_count):
+@api.route('/predict', methods=['POST'])
+def predict():
+    # Take the request json
+    data = request.get_json()
+    # Get the data from the request
+    key = data['key']
+    length = data['length'] if 'length' in data else 25
+    melody_count = data['melodyCount'] if 'melodyCount' in data else 1
+
     results = []
     for i in range(melody_count):
         x = [np.random.randint(0, output_classes) for _ in range(sequence_length)]
