@@ -17,7 +17,7 @@ function MainLayout() {
           </Typography>
         </Link>
       </header>
-      <main className="h-[calc(100vh-65px)] bg-gray-200">
+      <main className="min-h-[calc(100vh-65px)] h-full bg-gray-200">
         <Outlet />
       </main>
     </>
