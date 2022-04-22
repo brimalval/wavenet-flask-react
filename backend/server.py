@@ -23,8 +23,17 @@ def serve(path):
 
 # Routes for getting other public files
 @app.route("/<regex(r'(.*?)\.(json|txt|png|ico|js)$'):file>", methods=["GET"])
-def favicon(file):
+def static_files(file):
 	return send_from_directory(app.template_folder, file)
+
+# Route for getting the model's predictions
+@app.route("/uploads/<path:file>", methods=["GET"])
+def uploads(file):
+    # Get the file name from the file path
+    file_name = file.split("/")[-1]
+    print("file_name: ", file_name)
+    print("file_path: ", os.path.join(app.config["UPLOAD_FOLDER"], file_name))
+    return send_from_directory(app.config['UPLOAD_FOLDER'], file_name)
 
 # API routes
 app.register_blueprint(api, url_prefix="/api")
