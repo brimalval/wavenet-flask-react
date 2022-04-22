@@ -9,24 +9,36 @@ import {
   TableRow,
 } from "@mui/material";
 import { getFile } from "../utils/api";
-import { downloadBlob, playBlob } from "../utils/helpers";
+import { downloadBlob, playBlob, setupPlayer } from "../utils/helpers";
 import Song from "../utils/types/Song";
-import Soundfont from "soundfont-player";
+import { InstrumentName } from "soundfont-player";
+import { Player } from "midi-player-js";
+import { useEffect, useState } from "react";
 
 type Props = {
   songs: Song[];
-  instrument?: Soundfont.InstrumentName;
+  instrument?: InstrumentName;
 };
 
 const MelodyList: React.FC<Props> = (props) => {
+  const [player, setPlayer] = useState<Player | undefined>();
   const handleDownload = async (path: string) => {
     const response = await getFile(path);
     downloadBlob(response.data);
   };
   const handlePlay = async (path: string) => {
     const response = await getFile(path);
-    await playBlob(response.data, props.instrument || "acoustic_grand_piano");
+    await playBlob(response.data, props.instrument || "acoustic_grand_piano", player);
   };
+  useEffect(() => {
+    const setup = async () => {
+      if (props.instrument){
+        const newPlayer = await setupPlayer(props.instrument);
+        setPlayer(newPlayer);
+      }
+    };
+    setup();
+  }, [props.instrument]);
   return (
     <Paper>
       <Table>
