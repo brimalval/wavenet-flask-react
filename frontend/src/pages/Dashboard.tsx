@@ -38,8 +38,18 @@ function Dashboard() {
       })
     )
   );
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [instrument, setInstrument] = useState<InstrumentName>("acoustic_grand_piano");
+  // Combine songs and instrument into a single state
+  const [{ songs, instrument }, setState] = useState<{
+    songs: Song[];
+    instrument: InstrumentName;
+  }>({
+    songs: [],
+    instrument: "acoustic_grand_piano",
+  });
+  const setSongs = (songs: Song[]) =>
+    setState((prevState) => ({ ...prevState, songs }));
+  const setInstrument = (instrument: InstrumentName) =>
+    setState((prevState) => ({ ...prevState, instrument }));
   return (
     <div className="w-full p-6 flex flex-col space-y-4">
       <Formik
@@ -57,13 +67,13 @@ function Dashboard() {
             key: values.key.value,
           });
           if (response.status === 200) {
-            setSongs(response.data as Song[]);
-            setInstrument(values.sound);
+            setState({
+              songs: response.data as Song[],
+              instrument: values.sound,
+            });
           } else {
             console.error(response.data);
           }
-
-          console.log("response", response);
           setSubmitting(false);
         }}
       >
@@ -114,6 +124,9 @@ function Dashboard() {
                     onChange={(event, value) => {
                       setFieldValue("key", value);
                     }}
+                    isOptionEqualToValue={(option, check) =>
+                      option.value === check.value
+                    }
                     options={keyOptions}
                     renderInput={(params) => (
                       <TextField
