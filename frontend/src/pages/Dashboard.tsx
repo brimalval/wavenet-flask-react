@@ -1,6 +1,5 @@
 import {
   Autocomplete,
-  Button,
   FormControl,
   FormHelperText,
   Grid,
@@ -9,9 +8,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import AddIcon from "@mui/icons-material/Add";
 import { Form, Formik } from "formik";
 import DashboardCard from "../components/DashboardCard";
 import { Key, Note, Scale } from "../utils/types/Key";
+import Song from "../utils/types/Song";
+import { postKey } from "../utils/api";
+import { useState } from "react";
+import MelodyList from "../components/MelodyList";
 
 function Dashboard() {
   type KeyOption = {
@@ -38,8 +43,9 @@ function Dashboard() {
     Clarinet = "Clarinet",
     Guitar = "Guitar",
   }
+  const [songs, setSongs] = useState<Song[]>([]);
   return (
-    <div className="w-full p-6">
+    <div className="w-full p-6 flex flex-col space-y-4">
       <Formik
         initialValues={{
           variedRhythm: false,
@@ -49,8 +55,18 @@ function Dashboard() {
           tempo: 120,
           measureCount: 0,
         }}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log("values", values);
+        onSubmit={async (values, { setSubmitting }) => {
+          const response = await postKey({
+            ...values,
+            key: values.key.value,
+          });
+          if (response.status === 200) {
+            setSongs(response.data as Song[]);
+          } else {
+            console.error(response.data);
+          }
+
+          console.log("response", response);
           setSubmitting(false);
         }}
       >
@@ -99,7 +115,7 @@ function Dashboard() {
                     defaultValue={keyOptions[0]}
                     groupBy={(option) => option.scale}
                     onChange={(event, value) => {
-                      setFieldValue("key", value?.value);
+                      setFieldValue("key", value);
                     }}
                     options={keyOptions}
                     renderInput={(params) => (
@@ -109,7 +125,6 @@ function Dashboard() {
                         placeholder="Select Key"
                         id="key"
                         error={!!errors.key}
-                        name="key"
                       />
                     )}
                   />
@@ -186,18 +201,22 @@ function Dashboard() {
               </Grid>
 
               <Grid item xs={1}>
-                <Button
+                <LoadingButton
+                  loading={isSubmitting}
+                  loadingPosition="start"
+                  startIcon={<AddIcon />}
                   type="submit"
                   variant="contained"
                   className="bg-primary"
                 >
                   Generate
-                </Button>
+                </LoadingButton>
               </Grid>
             </Grid>
           </Form>
         )}
       </Formik>
+      {songs.length > 0 && <MelodyList songs={songs} />}
     </div>
   );
 }
