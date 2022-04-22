@@ -1,6 +1,6 @@
 import { Download, PlayArrow } from "@mui/icons-material";
 import {
-	Button,
+  Button,
   Paper,
   Table,
   TableBody,
@@ -8,6 +8,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { getFile } from "../utils/api";
+import { downloadBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
 
 type Props = {
@@ -15,6 +17,10 @@ type Props = {
 };
 
 const MelodyList: React.FC<Props> = (props) => {
+  const handleDownload = async (path: string) => {
+    const response = await getFile(path);
+    downloadBlob(response.data);
+  };
   return (
     <Paper>
       <Table>
@@ -35,7 +41,11 @@ const MelodyList: React.FC<Props> = (props) => {
                   <Button variant="text" startIcon={<PlayArrow />}>
                     Play
                   </Button>
-                  <Button variant="text" startIcon={<Download />} >
+                  <Button
+                    variant="text"
+                    startIcon={<Download />}
+                    onClick={() => handleDownload(song.path)}
+                  >
                     Download
                   </Button>
                 </div>
