@@ -17,6 +17,8 @@ import Song from "../utils/types/Song";
 import { postKey } from "../utils/api";
 import { useState } from "react";
 import MelodyList from "../components/MelodyList";
+import { InstrumentName } from "soundfont-player";
+import instrumentNamesArray from "../utils/types/Instrument";
 
 function Dashboard() {
   type KeyOption = {
@@ -36,14 +38,8 @@ function Dashboard() {
       })
     )
   );
-  enum SoundOptions {
-    Piano = "Piano",
-    Violin = "Violin",
-    Flute = "Flute",
-    Clarinet = "Clarinet",
-    Guitar = "Guitar",
-  }
   const [songs, setSongs] = useState<Song[]>([]);
+  const [instrument, setInstrument] = useState<InstrumentName>("acoustic_grand_piano");
   return (
     <div className="w-full p-6 flex flex-col space-y-4">
       <Formik
@@ -51,7 +47,7 @@ function Dashboard() {
           variedRhythm: false,
           melodyCount: 1,
           key: keyOptions[0],
-          sound: SoundOptions.Piano,
+          sound: "acoustic_grand_piano" as InstrumentName,
           tempo: 120,
           measureCount: 0,
         }}
@@ -62,6 +58,7 @@ function Dashboard() {
           });
           if (response.status === 200) {
             setSongs(response.data as Song[]);
+            setInstrument(values.sound);
           } else {
             console.error(response.data);
           }
@@ -93,7 +90,7 @@ function Dashboard() {
                     onChange={(event, newValue) => {
                       setFieldValue("sound", newValue);
                     }}
-                    options={Object.values(SoundOptions)}
+                    options={instrumentNamesArray}
                     getOptionLabel={(option) => option}
                     renderInput={(params) => (
                       <TextField
@@ -216,7 +213,7 @@ function Dashboard() {
           </Form>
         )}
       </Formik>
-      {songs.length > 0 && <MelodyList songs={songs} />}
+      {songs.length > 0 && <MelodyList songs={songs} instrument={instrument} />}
     </div>
   );
 }

@@ -9,17 +9,23 @@ import {
   TableRow,
 } from "@mui/material";
 import { getFile } from "../utils/api";
-import { downloadBlob } from "../utils/helpers";
+import { downloadBlob, playBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
+import Soundfont from "soundfont-player";
 
 type Props = {
   songs: Song[];
+  instrument?: Soundfont.InstrumentName;
 };
 
 const MelodyList: React.FC<Props> = (props) => {
   const handleDownload = async (path: string) => {
     const response = await getFile(path);
     downloadBlob(response.data);
+  };
+  const handlePlay = async (path: string) => {
+    const response = await getFile(path);
+    await playBlob(response.data, props.instrument || "acoustic_grand_piano");
   };
   return (
     <Paper>
@@ -38,7 +44,11 @@ const MelodyList: React.FC<Props> = (props) => {
               <TableCell>{song.notes.join(" ")}</TableCell>
               <TableCell>
                 <div className="flex justify-end">
-                  <Button variant="text" startIcon={<PlayArrow />}>
+                  <Button
+                    variant="text"
+                    startIcon={<PlayArrow />}
+                    onClick={() => handlePlay(song.path)}
+                  >
                     Play
                   </Button>
                   <Button
