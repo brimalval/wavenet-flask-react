@@ -27,7 +27,16 @@ const MelodyList: React.FC<Props> = (props) => {
     downloadBlob(response.data);
   };
   const handlePlay = async (path: string) => {
+    if (player?.isPlaying()) {
+      console.log("Player is playing");
+      player.pause();
+      return;
+    }
     const response = await getFile(path);
+    if (response.status !== 200) {
+      console.error("Please try again");
+      return;
+    }
     await playBlob(response.data, props.instrument || "acoustic_grand_piano", player);
   };
   useEffect(() => {
