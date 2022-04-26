@@ -22,6 +22,7 @@
     "@types/react-dom": "^17.0.14",
     "axios": "^0.26.1",
     "formik": "^2.2.9",
+    "material-react-toastify": "^1.0.1",
     "midi-player-js": "^2.0.16",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
