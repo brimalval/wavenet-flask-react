@@ -17,11 +17,55 @@ import { useEffect, useState } from "react";
 
 type Props = {
   songs: Song[];
-  instrument?: InstrumentName;
+  instrument: InstrumentName;
 };
 
 const MelodyList: React.FC<Props> = (props) => {
-  const [player, setPlayer] = useState<Player | undefined>();
+  const [{ player, songPath, cache }, setState] = useState<{
+    player?: Player;
+    songPath?: string;
+    cache: { [path: string]: Blob };
+  }>({ cache: {} });
+
+  const setPlayer = (player: Player) => {
+    setState((prevState) => ({ ...prevState, player }));
+  };
+
+  const clearCache = () => {
+    setState((prevState) => ({ ...prevState, cache: {} }));
+  };
+
+  const { songs, instrument } = props;
+
+  const playSong = async (song: Blob) => {
+    const currentPlayer = player ?? await setupPlayer(instrument || "acoustic_grand_piano");
+    console.log("Checking if player exists");
+    if (!player) {
+      await playBlob(song, currentPlayer);
+      setPlayer(currentPlayer);
+      return;
+    }
+    await playBlob(song, currentPlayer);
+  };
+
+  const getSong = async (path: string) => {
+    var songBlob: Blob;
+    console.log("Cache", cache);
+    if (path in cache) {
+      songBlob = cache[path];
+    } else {
+      const response = await getFile(path);
+      if (response.status !== 200) {
+        //TODO: Replace with error notification
+        console.error("Please try again");
+        return;
+      }
+      songBlob = response.data;
+      cache[path] = songBlob;
+    }
+    return songBlob;
+  }
+
   const handleDownload = async (path: string) => {
     const response = await getFile(path);
     downloadBlob(response.data);
@@ -30,24 +74,35 @@ const MelodyList: React.FC<Props> = (props) => {
     if (player?.isPlaying()) {
       console.log("Player is playing");
       player.pause();
-      return;
+      if (path === songPath) {
+        return;
+      }
     }
-    const response = await getFile(path);
-    if (response.status !== 200) {
-      console.error("Please try again");
-      return;
+
+    console.log(`Getting song at path: ${path}...`);
+    const songBlob = await getSong(path);
+
+    if (songBlob) {
+      console.log("Playing blob")
+      await playSong(songBlob);
+      setState((prevState) => ({ ...prevState, songPath: path }));
     }
-    await playBlob(response.data, props.instrument || "acoustic_grand_piano", player);
   };
+
   useEffect(() => {
     const setup = async () => {
-      if (props.instrument){
-        const newPlayer = await setupPlayer(props.instrument);
-        setPlayer(newPlayer);
-      }
+      console.log("Player initializing...");
+      const newPlayer = await setupPlayer(props.instrument);
+      setPlayer(newPlayer);
+      console.log("Player initialized!");
     };
     setup();
   }, [props.instrument]);
+
+  useEffect(() => {
+    clearCache();
+  }, [songs]);
+
   return (
     <Paper>
       <Table>

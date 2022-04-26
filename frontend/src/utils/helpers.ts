@@ -24,8 +24,7 @@ export const setupPlayer = async (instrument: Soundfont.InstrumentName) => {
   return midiPlayer;
 }
 
-export const playBlob = async (blob: Blob, instrument: Soundfont.InstrumentName, player?: MidiPlayer.Player) => {
-   player ??= await setupPlayer(instrument);
+export const playBlob = async (blob: Blob, player: MidiPlayer.Player) => {
   // Create Base64 encoding of the blob
   var reader = new FileReader();
   reader.readAsDataURL(blob);
