@@ -214,9 +214,7 @@ function Dashboard() {
           </Grid>
         </Grid>
       </form>
-      {songs.length > 0 && (
-        <MelodyList songs={songs} instrument={values.sound} />
-      )}
+      <MelodyList songs={songs} instrument={values.sound} />
     </div>
   );
 }

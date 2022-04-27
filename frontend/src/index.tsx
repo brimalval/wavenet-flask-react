@@ -5,6 +5,7 @@ import App from "./App";
 import "@fontsource/roboto";
 import "@fontsource/poppins";
 import "@fontsource/open-sans";
+import 'material-react-toastify/dist/ReactToastify.css';
 import { StyledEngineProvider } from "@mui/material";
 
 const container = document.getElementById("root");
