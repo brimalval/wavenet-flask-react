@@ -11,18 +11,27 @@ export const downloadBlob = (blob: Blob, fileName?: string) => {
   link.remove();
 };
 
-export const setupPlayer = async (instrument: Soundfont.InstrumentName) => {
+export const setupPlayer = async (
+  instrument: Soundfont.InstrumentName,
+  notePlayCallback?: () => any
+) => {
   // Set up the player
-  var soundfontPlayer = await Soundfont.instrument(new AudioContext(), instrument);
+  var soundfontPlayer = await Soundfont.instrument(
+    new AudioContext(),
+    instrument
+  );
   const midiPlayer = new MidiPlayer.Player(function (event: any) {
     if (event.name === "Note on") {
+      if (notePlayCallback) {
+        notePlayCallback();
+      }
       soundfontPlayer.play(event.noteName);
     } else if (event.name === "Note off") {
       soundfontPlayer.stop();
     }
   });
   return midiPlayer;
-}
+};
 
 export const playBlob = async (blob: Blob, player: MidiPlayer.Player) => {
   // Create Base64 encoding of the blob
