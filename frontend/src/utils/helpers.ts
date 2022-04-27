@@ -21,19 +21,19 @@ export const setupPlayer = async (
     instrument
   );
   const midiPlayer = new MidiPlayer.Player(function (event: any) {
-    if (event.name === "Note on") {
+    if (event.name === "Note on" && event.velocity > 0) {
       if (notePlayCallback) {
         notePlayCallback();
       }
       soundfontPlayer.play(event.noteName);
     } else if (event.name === "Note off") {
       soundfontPlayer.stop();
-    }
+    } 
   });
   return midiPlayer;
 };
 
-export const playBlob = async (blob: Blob, player: MidiPlayer.Player) => {
+export const playBlob = (blob: Blob, player: MidiPlayer.Player) => {
   // Create Base64 encoding of the blob
   var reader = new FileReader();
   reader.readAsDataURL(blob);

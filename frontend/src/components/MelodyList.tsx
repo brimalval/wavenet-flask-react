@@ -45,12 +45,12 @@ const MelodyList: React.FC<Props> = (props) => {
 
   const { songs, instrument, tempo } = props;
 
-  const playSong = async (song: Blob) => {
+  const playSong = (song: Blob) => {
     if (!player) {
       toast.error("Player has not been initialized!");
       return;
     }
-    await playBlob(song, player);
+    playBlob(song, player);
   };
 
   const getSong = async (path: string) => {
@@ -84,7 +84,7 @@ const MelodyList: React.FC<Props> = (props) => {
 
     const songBlob = await getSong(path);
     if (songBlob) {
-      await playSong(songBlob);
+      playSong(songBlob);
       setState((prevState) => ({ ...prevState, songPath: path }));
     }
   };
@@ -93,7 +93,7 @@ const MelodyList: React.FC<Props> = (props) => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        const newPlayer = await setupPlayer(instrument, () => console.log("I am a callback"));
+        const newPlayer = await setupPlayer(instrument);
         setPlayer(newPlayer);
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
@@ -130,6 +130,7 @@ const MelodyList: React.FC<Props> = (props) => {
 
   return (
     <Paper>
+      {console.log("PLAYER", player)}
       <Table>
         <TableHead>
           <TableRow>
