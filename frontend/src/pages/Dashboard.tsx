@@ -214,7 +214,7 @@ function Dashboard() {
           </Grid>
         </Grid>
       </form>
-      <MelodyList songs={songs} instrument={values.sound} />
+      <MelodyList songs={songs} instrument={values.sound} tempo={values.tempo} />
     </div>
   );
 }

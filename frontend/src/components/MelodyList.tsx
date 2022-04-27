@@ -20,6 +20,7 @@ import { toast } from "material-react-toastify";
 type Props = {
   songs: Song[];
   instrument: InstrumentName;
+  tempo: number;
 };
 
 const MelodyList: React.FC<Props> = (props) => {
@@ -42,7 +43,7 @@ const MelodyList: React.FC<Props> = (props) => {
     setState((prevState) => ({ ...prevState, cache: {} }));
   };
 
-  const { songs, instrument } = props;
+  const { songs, instrument, tempo } = props;
 
   const playSong = async (song: Blob) => {
     const currentPlayer =
@@ -109,6 +110,18 @@ const MelodyList: React.FC<Props> = (props) => {
   useEffect(() => {
     clearCache();
   }, [songs]);
+
+  useEffect(() => {
+    var mounted = true;
+    if (mounted) {
+      if (player) {
+        (player as any).setTempo(tempo);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [player, tempo]);
 
   if (songs.length === 0) {
     return (
