@@ -30,11 +30,11 @@ const MelodyList: React.FC<Props> = (props) => {
   }>({ cache: {} });
 
   const setPlayer = (player: Player) => {
-    setState((prevState) =>{
+    setState((prevState) => {
       if (prevState.player) {
         prevState.player.stop();
       }
-      return { ...prevState, player }
+      return { ...prevState, player };
     });
   };
 
@@ -93,25 +93,29 @@ const MelodyList: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const setup = async () => {
-      if (player) {
-        player.stop();
-      }
       toast.info("Loading instrument...");
-      const newPlayer = await setupPlayer(instrument);
-      setPlayer(newPlayer);
+      try {
+        const newPlayer = await setupPlayer(instrument);
+        setPlayer(newPlayer);
+      } catch (e) {
+        toast.error("Error loading instrument. Please try again!");
+        return;
+      }
       toast.success("Instrument loaded!");
     };
     setup();
   }, [instrument]);
 
   useEffect(() => {
-    if (cache && Object.keys(cache).length > 0) {
-      clearCache();
-    }
+    clearCache();
   }, [songs]);
 
   if (songs.length === 0) {
-    return <Paper className="flex justify-center items-center p-5"><Typography>Press "generate" to see some melodies!</Typography></Paper>;
+    return (
+      <Paper className="flex justify-center items-center p-5">
+        <Typography>Press "generate" to see some melodies!</Typography>
+      </Paper>
+    );
   }
 
   return (
