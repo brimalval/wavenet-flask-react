@@ -16,7 +16,6 @@ import { InstrumentName } from "soundfont-player";
 import { Player } from "midi-player-js";
 import { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
-import { get } from "http";
 
 type Props = {
   songs: Song[];
@@ -95,7 +94,11 @@ const MelodyList: React.FC<Props> = (props) => {
     const songBlob = await getSong(path);
     if (songBlob) {
       playSong(songBlob);
-      setState((prevState) => ({ ...prevState, songPath: path, playing: true }));
+      setState((prevState) => ({
+        ...prevState,
+        songPath: path,
+        playing: true,
+      }));
     }
   };
 
