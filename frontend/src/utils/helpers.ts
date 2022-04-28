@@ -1,5 +1,5 @@
 import Soundfont from "soundfont-player";
-import MidiPlayer from "midi-player-js";
+import MidiPlayer, { Event } from "midi-player-js";
 
 export const downloadBlob = (blob: Blob, fileName?: string) => {
   const blobType = blob.type ?? "audio/mp3";
@@ -29,7 +29,7 @@ export const setupPlayer = async (
       soundfontPlayer.play(event.noteName);
     } else if (event.name === "Note off") {
       soundfontPlayer.stop();
-    } 
+    }
   });
   return midiPlayer;
 };
@@ -44,3 +44,19 @@ export const playBlob = (blob: Blob, player: MidiPlayer.Player) => {
     player.play();
   };
 };
+
+export const getEvents = (player: MidiPlayer.Player) => {
+  const events = player.getEvents();
+  // Grimmdude screwed up type definitions for .getEvents() so I made a hacky fix
+  const [setupEvents, noteEvents] = events as any as [Event[], Event[]];
+  const notePlayEvents = noteEvents.filter((event) => event.name === "Note on");
+  return [setupEvents, notePlayEvents];
+};
+
+export const getNoteEvents = (player: MidiPlayer.Player) => {
+  return getEvents(player)[1];
+}
+
+export const getSetupEvents = (player: MidiPlayer.Player) => {
+  return getEvents(player)[0];
+}
