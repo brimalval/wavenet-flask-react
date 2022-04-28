@@ -22,6 +22,7 @@ import { InstrumentName } from "soundfont-player";
 import { Player } from "midi-player-js";
 import { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
+import MusicModal from "./MusicModal";
 
 type Props = {
   songs: Song[];
@@ -30,12 +31,17 @@ type Props = {
 };
 
 const MelodyList: React.FC<Props> = (props) => {
-  const [{ player, currentSong, cache, playing }, setState] = useState<{
+  const [
+    { player, currentSong, cache, playing, musicModalOpen, eventIndex },
+    setState,
+  ] = useState<{
     player?: Player;
     currentSong?: Song;
     cache: { [path: string]: Blob };
     playing: boolean;
-  }>({ cache: {}, playing: false });
+    musicModalOpen: boolean;
+    eventIndex: number;
+  }>({ cache: {}, playing: false, musicModalOpen: false, eventIndex: 0 });
 
   const { songs, instrument, tempo } = props;
 
@@ -56,9 +62,14 @@ const MelodyList: React.FC<Props> = (props) => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        const newPlayer = await setupPlayer(instrument);
+        const newPlayer = await setupPlayer(instrument, () => {
+          setState((prevState) => ({
+            ...prevState,
+            eventIndex: prevState.eventIndex + 1,
+          }));
+        });
         newPlayer.on("endOfFile", () => {
-          setState((prevState) => ({ ...prevState, playing: false }));
+          setState((prevState) => ({ ...prevState, playing: false, eventIndex: 0 }));
         });
         setPlayer(newPlayer);
       } catch (e) {
@@ -144,18 +155,20 @@ const MelodyList: React.FC<Props> = (props) => {
 
     if (song.path === currentSong?.path && player.getFilesize()) {
       player.play();
-      setState((prev) => ({ ...prev, playing: true }));
+      setState((prev) => ({ ...prev, playing: true, musicModalOpen: true }));
       return;
     }
 
     const songBlob = await getSong(song.path);
     if (songBlob) {
-      playSong(songBlob);
       setState((prevState) => ({
         ...prevState,
         currentSong: song,
+        eventIndex: 0,
         playing: true,
+        musicModalOpen: true,
       }));
+      playSong(songBlob);
     }
   };
 
@@ -181,6 +194,21 @@ const MelodyList: React.FC<Props> = (props) => {
 
   return (
     <Paper>
+      {currentSong && (
+        <MusicModal
+          open={musicModalOpen}
+          eventIndex={eventIndex}
+          events={[]}
+          scale={currentSong.scale}
+          tempo={120}
+          handleClose={() =>
+            setState((prev) => ({ ...prev, musicModalOpen: false }))
+          }
+          handlePlay={() => {
+            handlePlay(currentSong);
+          }}
+        />
+      )}
       <Table>
         <TableHead>
           <TableRow>
