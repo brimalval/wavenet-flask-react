@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, current_app
 from model.model import Model
 import numpy as np
+from model.converter import Converter
 
 # from flask_api import status
 
@@ -14,7 +15,8 @@ kernel_size = 2
 layer_size = 4
 output_classes = 120
 sequence_length = 50
-model = Model(res_channel, skip_channel, stack_size, kernel_size, layer_size, output_classes, sequence_length)
+model = Model(res_channel, skip_channel, stack_size, kernel_size,
+              layer_size, output_classes, sequence_length)
 model.load("model/save_128_256_2_2_4_120_limit_all/weights_only.h5")
 
 
@@ -29,13 +31,19 @@ def predict():
 
     results = []
     for i in range(melody_count):
-        x = [np.random.randint(0, output_classes) for _ in range(sequence_length)]
+        x = [np.random.randint(0, output_classes)
+             for _ in range(sequence_length)]
         # Create unique file name for the prediction that includes the key, index, and date
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
         result = model.predict(x, length, sequence_length, key, upload_path)
-        results.append({"notes": result, "path": upload_path + ".mid"})
+        print("KEY", key)
+        results.append({
+            "notes": result,
+            "path": upload_path + ".mid",
+            "scale": Converter().get_scale(key=key, notes_as_ints=False)
+        })
     return jsonify(results)
 
 
