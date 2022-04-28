@@ -1,4 +1,4 @@
-import { Download, PlayArrow } from "@mui/icons-material";
+import { Download, PlayArrow, Pause } from "@mui/icons-material";
 import {
   Button,
   Paper,
@@ -16,6 +16,7 @@ import { InstrumentName } from "soundfont-player";
 import { Player } from "midi-player-js";
 import { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
+import { get } from "http";
 
 type Props = {
   songs: Song[];
@@ -24,11 +25,12 @@ type Props = {
 };
 
 const MelodyList: React.FC<Props> = (props) => {
-  const [{ player, songPath, cache }, setState] = useState<{
+  const [{ player, songPath, cache, playing }, setState] = useState<{
     player?: Player;
     songPath?: string;
     cache: { [path: string]: Blob };
-  }>({ cache: {} });
+    playing: boolean;
+  }>({ cache: {}, playing: false });
 
   const setPlayer = (player: Player) => {
     setState((prevState) => {
@@ -74,19 +76,47 @@ const MelodyList: React.FC<Props> = (props) => {
     const response = await getFile(path);
     downloadBlob(response.data);
   };
+
   const handlePlay = async (path: string) => {
     if (player?.isPlaying()) {
       player.pause();
+      setState((prev) => ({ ...prev, playing: false }));
       if (path === songPath) {
         return;
       }
     }
 
+    if (path === songPath) {
+      player?.play();
+      setState((prev) => ({ ...prev, playing: true }));
+      return;
+    }
+
     const songBlob = await getSong(path);
     if (songBlob) {
       playSong(songBlob);
-      setState((prevState) => ({ ...prevState, songPath: path }));
+      setState((prevState) => ({ ...prevState, songPath: path, playing: true }));
     }
+  };
+
+  const getPlayPauseButton = (path: string) => {
+    return path === songPath && playing ? (
+      <Button
+        variant="text"
+        startIcon={<Pause />}
+        onClick={() => handlePlay(path)}
+      >
+        Pause
+      </Button>
+    ) : (
+      <Button
+        variant="text"
+        startIcon={<PlayArrow />}
+        onClick={() => handlePlay(path)}
+      >
+        Play
+      </Button>
+    );
   };
 
   useEffect(() => {
@@ -94,6 +124,9 @@ const MelodyList: React.FC<Props> = (props) => {
       toast.info("Loading instrument...");
       try {
         const newPlayer = await setupPlayer(instrument);
+        newPlayer.on("endOfFile", () => {
+          setState((prevState) => ({ ...prevState, playing: false }));
+        });
         setPlayer(newPlayer);
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
@@ -130,7 +163,6 @@ const MelodyList: React.FC<Props> = (props) => {
 
   return (
     <Paper>
-      {console.log("PLAYER", player)}
       <Table>
         <TableHead>
           <TableRow>
@@ -146,13 +178,7 @@ const MelodyList: React.FC<Props> = (props) => {
               <TableCell>{song.notes.join(" ")}</TableCell>
               <TableCell>
                 <div className="flex justify-end">
-                  <Button
-                    variant="text"
-                    startIcon={<PlayArrow />}
-                    onClick={() => handlePlay(song.path)}
-                  >
-                    Play
-                  </Button>
+                  {getPlayPauseButton(song.path)}
                   <Button
                     variant="text"
                     startIcon={<Download />}
