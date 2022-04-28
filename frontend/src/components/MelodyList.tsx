@@ -30,9 +30,9 @@ type Props = {
 };
 
 const MelodyList: React.FC<Props> = (props) => {
-  const [{ player, songPath, cache, playing }, setState] = useState<{
+  const [{ player, currentSong, cache, playing }, setState] = useState<{
     player?: Player;
-    songPath?: string;
+    currentSong?: Song;
     cache: { [path: string]: Blob };
     playing: boolean;
   }>({ cache: {}, playing: false });
@@ -133,38 +133,38 @@ const MelodyList: React.FC<Props> = (props) => {
     downloadBlob(response.data);
   };
 
-  const handlePlay = async (path: string) => {
+  const handlePlay = async (song: Song) => {
     if (player.isPlaying()) {
       player.pause();
       setState((prev) => ({ ...prev, playing: false }));
-      if (path === songPath) {
+      if (song.path === currentSong?.path) {
         return;
       }
     }
 
-    if (path === songPath && player.getFilesize()) {
+    if (song.path === currentSong?.path && player.getFilesize()) {
       player.play();
       setState((prev) => ({ ...prev, playing: true }));
       return;
     }
 
-    const songBlob = await getSong(path);
+    const songBlob = await getSong(song.path);
     if (songBlob) {
       playSong(songBlob);
       setState((prevState) => ({
         ...prevState,
-        songPath: path,
+        currentSong: song,
         playing: true,
       }));
     }
   };
 
-  const getPlayPauseButton = (path: string) => {
-    return path === songPath && playing ? (
+  const getPlayPauseButton = (song: Song) => {
+    return song.path === currentSong?.path && playing ? (
       <Button
         variant="text"
         startIcon={<Pause />}
-        onClick={() => handlePlay(path)}
+        onClick={() => handlePlay(song)}
       >
         Pause
       </Button>
@@ -172,7 +172,7 @@ const MelodyList: React.FC<Props> = (props) => {
       <Button
         variant="text"
         startIcon={<PlayArrow />}
-        onClick={() => handlePlay(path)}
+        onClick={() => handlePlay(song)}
       >
         Play
       </Button>
@@ -196,7 +196,7 @@ const MelodyList: React.FC<Props> = (props) => {
               <TableCell>{song.notes.join(" ")}</TableCell>
               <TableCell>
                 <div className="flex justify-end">
-                  {getPlayPauseButton(song.path)}
+                  {getPlayPauseButton(song)}
                   <Button
                     variant="text"
                     startIcon={<Download />}
