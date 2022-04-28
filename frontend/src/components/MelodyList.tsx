@@ -1,6 +1,7 @@
 import { Download, PlayArrow, Pause } from "@mui/icons-material";
 import {
   Button,
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -10,7 +11,12 @@ import {
   Typography,
 } from "@mui/material";
 import { getFile } from "../utils/api";
-import { downloadBlob, playBlob, setupPlayer } from "../utils/helpers";
+import {
+  downloadBlob,
+  playBlob,
+  setupPlayer,
+  getNoteEvents,
+} from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
 import { Player } from "midi-player-js";
@@ -31,6 +37,12 @@ const MelodyList: React.FC<Props> = (props) => {
     playing: boolean;
   }>({ cache: {}, playing: false });
 
+  const { songs, instrument, tempo } = props;
+
+  const clearCache = () => {
+    setState((prevState) => ({ ...prevState, cache: {} }));
+  };
+
   const setPlayer = (player: Player) => {
     setState((prevState) => {
       if (prevState.player) {
@@ -40,11 +52,56 @@ const MelodyList: React.FC<Props> = (props) => {
     });
   };
 
-  const clearCache = () => {
-    setState((prevState) => ({ ...prevState, cache: {} }));
-  };
+  useEffect(() => {
+    const setup = async () => {
+      toast.info("Loading instrument...");
+      try {
+        const newPlayer = await setupPlayer(instrument);
+        newPlayer.on("endOfFile", () => {
+          setState((prevState) => ({ ...prevState, playing: false }));
+        });
+        setPlayer(newPlayer);
+      } catch (e) {
+        toast.error("Error loading instrument. Please try again!");
+        return;
+      }
+      setState((prev) => ({ ...prev, playing: false }));
+      toast.success("Instrument loaded!");
+    };
+    setup();
+  }, [instrument]);
 
-  const { songs, instrument, tempo } = props;
+  useEffect(() => {
+    clearCache();
+  }, [songs]);
+
+  useEffect(() => {
+    var mounted = true;
+    if (mounted) {
+      if (player) {
+        (player as any).setTempo(tempo);
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [player, tempo]);
+
+  if (!player) {
+    return (
+      <Paper className="flex justify-center items-center p-5">
+        <CircularProgress />
+      </Paper>
+    );
+  }
+
+  if (songs.length === 0) {
+    return (
+      <Paper className="flex justify-center items-center p-5">
+        <Typography>Press "generate" to see some melodies!</Typography>
+      </Paper>
+    );
+  }
 
   const playSong = (song: Blob) => {
     if (!player) {
@@ -77,7 +134,7 @@ const MelodyList: React.FC<Props> = (props) => {
   };
 
   const handlePlay = async (path: string) => {
-    if (player?.isPlaying()) {
+    if (player.isPlaying()) {
       player.pause();
       setState((prev) => ({ ...prev, playing: false }));
       if (path === songPath) {
@@ -85,8 +142,8 @@ const MelodyList: React.FC<Props> = (props) => {
       }
     }
 
-    if (path === songPath) {
-      player?.play();
+    if (path === songPath && player.getFilesize()) {
+      player.play();
       setState((prev) => ({ ...prev, playing: true }));
       return;
     }
@@ -121,48 +178,6 @@ const MelodyList: React.FC<Props> = (props) => {
       </Button>
     );
   };
-
-  useEffect(() => {
-    const setup = async () => {
-      toast.info("Loading instrument...");
-      try {
-        const newPlayer = await setupPlayer(instrument);
-        newPlayer.on("endOfFile", () => {
-          setState((prevState) => ({ ...prevState, playing: false }));
-        });
-        setPlayer(newPlayer);
-      } catch (e) {
-        toast.error("Error loading instrument. Please try again!");
-        return;
-      }
-      toast.success("Instrument loaded!");
-    };
-    setup();
-  }, [instrument]);
-
-  useEffect(() => {
-    clearCache();
-  }, [songs]);
-
-  useEffect(() => {
-    var mounted = true;
-    if (mounted) {
-      if (player) {
-        (player as any).setTempo(tempo);
-      }
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [player, tempo]);
-
-  if (songs.length === 0) {
-    return (
-      <Paper className="flex justify-center items-center p-5">
-        <Typography>Press "generate" to see some melodies!</Typography>
-      </Paper>
-    );
-  }
 
   return (
     <Paper>
