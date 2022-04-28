@@ -1,5 +1,12 @@
 import { ExitToApp } from "@mui/icons-material";
-import { Box, Button, Modal, ModalProps, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  ModalProps,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { Event } from "midi-player-js";
 import Song from "../utils/types/Song";
 
@@ -9,11 +16,12 @@ type Props = Omit<ModalProps, "children"> & {
   tempo: number;
   eventIndex: number;
   handleClose: () => void;
-  handlePlay: () => any;
+  controlButton: React.ReactElement;
 };
 
 const MusicModal: React.FC<Props> = (props) => {
-  const { events, scale, tempo, eventIndex, ...modalProps } = props;
+  const { events, scale, tempo, eventIndex, controlButton, ...modalProps } =
+    props;
   return (
     <Modal {...modalProps} className="flex justify-center items-center">
       <Paper>
@@ -24,7 +32,7 @@ const MusicModal: React.FC<Props> = (props) => {
         </Box>
         <Typography variant="h6">Hello world</Typography>
         <Typography variant="h6">Event index: {eventIndex}</Typography>
-        <Button onClick={props.handlePlay}>Play</Button>
+        {controlButton}
       </Paper>
     </Modal>
   );

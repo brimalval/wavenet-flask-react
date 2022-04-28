@@ -204,9 +204,7 @@ const MelodyList: React.FC<Props> = (props) => {
           handleClose={() =>
             setState((prev) => ({ ...prev, musicModalOpen: false }))
           }
-          handlePlay={() => {
-            handlePlay(currentSong);
-          }}
+          controlButton={getPlayPauseButton(currentSong)}
         />
       )}
       <Table>
