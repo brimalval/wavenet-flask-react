@@ -25,6 +25,7 @@ export const setupPlayer = async (
       if (notePlayCallback) {
         notePlayCallback();
       }
+      console.log(event.noteName);
       soundfontPlayer.play(event.noteName);
     } else if (event.name === "Note off") {
       soundfontPlayer.stop();
@@ -36,13 +37,10 @@ export const setupPlayer = async (
 export const playBlob = (blob: Blob, player: MidiPlayer.Player) => {
   // Create Base64 encoding of the blob
   var reader = new FileReader();
-  reader.readAsDataURL(blob);
+  reader.readAsArrayBuffer(blob);
   reader.onloadend = function () {
-    var base64data = reader.result;
-    const url = base64data?.toString();
-    if (url && player) {
-      player.loadDataUri(url);
-      player.play();
-    }
+    const buffer = reader.result as ArrayBuffer;
+    player.loadArrayBuffer(buffer);
+    player.play();
   };
 };
