@@ -8,6 +8,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
 } from "@mui/material";
@@ -53,8 +54,7 @@ const MusicModal: React.FC<Props> = (props) => {
       const sameOctaves = currentEventNote?.at(-1) === note.at(-1);
       return (
         sharpToFlatMap[note.slice(0, 2) as keyof typeof sharpToFlatMap] ===
-        currentEvent.noteName?.slice(0, 2) &&
-        sameOctaves
+          currentEvent.noteName?.slice(0, 2) && sameOctaves
       );
     };
 
@@ -70,13 +70,17 @@ const MusicModal: React.FC<Props> = (props) => {
             <Close />
           </IconButton>
         </Box>
-        <Box className="p-2 overflow-auto">
+        <TableContainer component={Box} className="max-h-[75vh]">
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Note</TableCell>
+                <TableCell className="sticky left-0 bg-secondary-400 text-white">
+                  Note
+                </TableCell>
                 {events.map((event, index) => (
-                  <TableCell key={index}>{event.noteName}</TableCell>
+                  <TableCell key={index} align="right" className="bg-secondary-400 text-white">
+                    {event.noteName}
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -84,7 +88,9 @@ const MusicModal: React.FC<Props> = (props) => {
             <TableBody>
               {scaleCopy.map((note, index) => (
                 <TableRow key={index}>
-                  <TableCell>{note}</TableCell>
+                  <TableCell className="sticky left-0 bg-secondary-400 text-white">
+                    {note}
+                  </TableCell>
                   {events.map((event, innerIndex) => (
                     <TableCell
                       key={innerIndex}
@@ -97,7 +103,7 @@ const MusicModal: React.FC<Props> = (props) => {
               ))}
             </TableBody>
           </Table>
-        </Box>
+        </TableContainer>
         <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
           {controlButton}
         </Box>
