@@ -1,12 +1,9 @@
 import {
   Autocomplete,
-  FormControl,
-  FormHelperText,
+  FormControlLabel,
   Grid,
-  Input,
-  Slider,
+  Switch,
   TextField,
-  Typography,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import AddIcon from "@mui/icons-material/Add";
@@ -52,7 +49,6 @@ function Dashboard() {
       melodyCount: 1,
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
-      tempo: 120,
       measureCount: 0,
     },
     onSubmit: async (values, { setSubmitting }) => {
@@ -154,37 +150,12 @@ function Dashboard() {
                   />
                 </Grid>
                 <Grid item xs={6} className="flex flex-col justify-between">
-                  <FormControl>
-                    <div className="flex space-x-4">
-                      <Typography id="tempo">Tempo:</Typography>
-                      <Input
-                        id="tempo"
-                        name="tempo"
-                        type="number"
-                        size="small"
-                        value={values.tempo}
-                        onChange={handleChange}
-                        inputProps={{
-                          min: 45,
-                          max: 280,
-                        }}
-                        error={!!errors.tempo}
-                      />
-                    </div>
-                    <Slider
-                      value={values.tempo}
-                      onChange={(event, newValue) => {
-                        setFieldValue("tempo", newValue);
-                      }}
-                      aria-labelledby="tempo-slider"
-                      valueLabelDisplay="auto"
-                      step={1}
-                      min={45}
-                      max={280}
-                    />
-                    <FormHelperText>{errors.tempo}</FormHelperText>
-                  </FormControl>
-
+                  <FormControlLabel
+                    value="start"
+                    control={<Switch name="variedRhythm" color="primary" />}
+                    label="Varied Rhythm"
+                    labelPlacement="start"
+                  />
                   <TextField
                     fullWidth
                     label="No. of Measures"
@@ -214,7 +185,10 @@ function Dashboard() {
           </Grid>
         </Grid>
       </form>
-      <MelodyList songs={songs} instrument={values.sound} tempo={values.tempo} />
+      <MelodyList
+        songs={songs}
+        instrument={values.sound}
+      />
     </div>
   );
 }

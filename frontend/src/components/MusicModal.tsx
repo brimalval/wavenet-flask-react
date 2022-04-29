@@ -3,9 +3,11 @@ import {
   Box,
   Button,
   IconButton,
+  Input,
   Modal,
   ModalProps,
   Paper,
+  Slider,
   Table,
   TableBody,
   TableCell,
@@ -132,7 +134,7 @@ const MusicModal: React.FC<Props> = (props) => {
               <Close />
             </IconButton>
           </Box>
-          <TableContainer component={Box} className="max-h-[80vh]">
+          <TableContainer component={Box} className="max-h-[65vh]">
             <Table className="table-fixed">
               <TableHead>
                 <TableRow>
@@ -168,6 +170,34 @@ const MusicModal: React.FC<Props> = (props) => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Box className="p-10 flex justify-center">
+            <Box className="flex space-x-4">
+              <Typography id="tempo">Tempo:</Typography>
+              <Input
+                id="tempo"
+                name="tempo"
+                type="number"
+                size="small"
+                value={120}
+                onChange={(e) => {console.log(e)}}
+                inputProps={{
+                  min: 45,
+                  max: 280,
+                }}
+              />
+            </Box>
+            <Slider
+              value={120}
+              onChange={(event, newValue) => {
+                console.log(event);
+              }}
+              aria-labelledby="tempo-slider"
+              valueLabelDisplay="auto"
+              step={1}
+              min={45}
+              max={280}
+            />
+          </Box>
           <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
             {controlButton}
             <Button onClick={handleStop} startIcon={<Stop />}>

@@ -27,7 +27,6 @@ import MusicModal from "./MusicModal";
 type Props = {
   songs: Song[];
   instrument: InstrumentName;
-  tempo: number;
 };
 
 const MelodyList: React.FC<Props> = (props) => {
@@ -43,7 +42,7 @@ const MelodyList: React.FC<Props> = (props) => {
     eventIndex: number;
   }>({ cache: {}, playing: false, musicModalOpen: false, eventIndex: 0 });
 
-  const { songs, instrument, tempo } = props;
+  const { songs, instrument } = props;
 
   const clearCache = () => {
     setState((prevState) => ({ ...prevState, cache: {} }));
@@ -89,18 +88,6 @@ const MelodyList: React.FC<Props> = (props) => {
   useEffect(() => {
     clearCache();
   }, [songs]);
-
-  useEffect(() => {
-    var mounted = true;
-    if (mounted) {
-      if (player) {
-        (player as any).setTempo(tempo);
-      }
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [player, tempo]);
 
   if (!player) {
     return (
@@ -207,9 +194,15 @@ const MelodyList: React.FC<Props> = (props) => {
           events={getNoteEvents(player)}
           song={currentSong}
           tempo={120}
-          handleClose={() =>
-            setState((prev) => ({ ...prev, musicModalOpen: false }))
-          }
+          handleClose={() => {
+            player.stop();
+            setState((prev) => ({
+              ...prev,
+              playing: false,
+              musicModalOpen: false,
+              eventIndex: 0,
+            }));
+          }}
           handleStop={handleStop}
           controlButton={getPlayPauseButton(currentSong)}
         />
@@ -226,7 +219,7 @@ const MelodyList: React.FC<Props> = (props) => {
           {props.songs.map((song, index) => (
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{song.notes.map(note => note.name + " ")}</TableCell>
+              <TableCell>{song.notes.map((note) => note.name + " ")}</TableCell>
               <TableCell>
                 <div className="flex justify-end">
                   {getPlayPauseButton(song)}
