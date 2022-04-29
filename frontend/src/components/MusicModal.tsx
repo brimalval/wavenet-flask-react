@@ -18,10 +18,11 @@ import {
 import { createTheme, useTheme } from "@mui/material/styles";
 import { Event } from "midi-player-js";
 import { useEffect, useRef } from "react";
+import Song from "../utils/types/Song";
 
 type Props = Omit<ModalProps, "children"> & {
   events: Event[];
-  scale: string[];
+  song: Song;
   tempo: number;
   eventIndex: number;
   handleClose: () => void;
@@ -32,7 +33,7 @@ type Props = Omit<ModalProps, "children"> & {
 const MusicModal: React.FC<Props> = (props) => {
   const {
     events,
-    scale,
+    song,
     tempo,
     eventIndex,
     controlButton,
@@ -80,7 +81,7 @@ const MusicModal: React.FC<Props> = (props) => {
     }
   }, [currentNoteRef, eventIndex]);
 
-  const scaleCopy = [...scale].reverse();
+  const scaleCopy = [...song.scale].reverse();
   const mainTheme = useTheme();
   // Create MUI theme
   const getTheme = () =>

@@ -205,7 +205,7 @@ const MelodyList: React.FC<Props> = (props) => {
           open={musicModalOpen}
           eventIndex={eventIndex}
           events={getNoteEvents(player)}
-          scale={currentSong.scale}
+          song={currentSong}
           tempo={120}
           handleClose={() =>
             setState((prev) => ({ ...prev, musicModalOpen: false }))
