@@ -23,11 +23,42 @@ type Props = Omit<ModalProps, "children"> & {
 };
 
 const MusicModal: React.FC<Props> = (props) => {
-  const { events, scale, tempo, eventIndex, controlButton, handleClose, ...modalProps } =
-    props;
+  const {
+    events,
+    scale,
+    tempo,
+    eventIndex,
+    controlButton,
+    handleClose,
+    ...modalProps
+  } = props;
 
   const isBeingPlayed = (note: string, index: number) => {
-    return eventIndex > 0 && eventIndex - 1 === index && events[eventIndex - 1].noteName === note;
+    if (eventIndex < 1) {
+      return false;
+    }
+    const isSameIndex = eventIndex - 1 === index;
+    const currentEvent = events[eventIndex - 1];
+    const isSameNote = currentEvent.noteName === note;
+    // Check for equivalence of note in terms of sharp/flat
+    const sharpToFlatMap = {
+      "C#": "Db",
+      "D#": "Eb",
+      "F#": "Gb",
+      "G#": "Ab",
+      "A#": "Bb",
+    };
+    const isEquivalentNote = () => {
+      const currentEventNote = currentEvent.noteName;
+      const sameOctaves = currentEventNote?.at(-1) === note.at(-1);
+      return (
+        sharpToFlatMap[note.slice(0, 2) as keyof typeof sharpToFlatMap] ===
+        currentEvent.noteName?.slice(0, 2) &&
+        sameOctaves
+      );
+    };
+
+    return isSameIndex && (isSameNote || isEquivalentNote());
   };
   return (
     <Modal {...modalProps} className="flex justify-center items-center">
@@ -56,9 +87,7 @@ const MusicModal: React.FC<Props> = (props) => {
                     <TableCell
                       key={innerIndex}
                       className={
-                        isBeingPlayed(note, innerIndex)
-                          ? "bg-red-500"
-                          : ""
+                        isBeingPlayed(note, innerIndex) ? "bg-red-500" : ""
                       }
                     ></TableCell>
                   ))}
