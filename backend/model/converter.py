@@ -1,7 +1,6 @@
 from music21 import note, stream, converter
 from bidict import bidict
 
-
 notes_map = bidict({
     'C': 0,
     'C#': 5,
@@ -35,20 +34,21 @@ minor_scale_interval = [0, 10, 15, 25, 35,
 class Converter:
     # Function to create a music21 stream from a list of notes
 
-    def create_midi_stream(self, notes):
+    @staticmethod
+    def create_midi_stream(notes):
         stream_result = stream.Stream()
-        for note_int in notes:
-            stream_result.append(self.map_int_to_note(note_int))
+        for _note in notes:
+            stream_result.append(_note)
         return stream_result
 
     # Function to write a music21 stream to a midi file
-    def create_song_from_ints(self, notes, file_name="output"):
-        stream_result = self.create_midi_stream(notes)
+    def create_song_from_ints(self, notes, is_varied, note_duration=None, file_name="output", ):
+        stream_result = self.create_midi_stream([self.map_int_to_note(note_int, is_varied) for note_int in notes])
         stream_result.write('midi', f'{file_name}.mid')
 
     # Function to map integers to music21 notes
     @staticmethod
-    def map_int_to_note(note_int):
+    def map_int_to_note(note_int, is_varied, note_duration=None):
         if note_int > MAX_NOTE_VAL:
             raise Exception(f'{note_int} is not a valid note integer')
         # Pitches come in groups of 5, get the pitch by floor dividing by 5 then modulus 12
@@ -62,7 +62,7 @@ class Converter:
         duration = list(duration_map.keys())[note_int % 5]
         # Create a music21 note with the correct pitch and duration
         note_result = note.Note(pitch + str(octave))
-        note_result.duration.type = duration
+        note_result.duration.type = duration if is_varied else note_duration
         return note_result
 
     def get_scale(self, key, notes_as_ints=True):
