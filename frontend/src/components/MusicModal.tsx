@@ -23,7 +23,7 @@ type Props = Omit<ModalProps, "children"> & {
 };
 
 const MusicModal: React.FC<Props> = (props) => {
-  const { events, scale, tempo, eventIndex, controlButton, ...modalProps } =
+  const { events, scale, tempo, eventIndex, controlButton, handleClose, ...modalProps } =
     props;
 
   const isBeingPlayed = (note: string, index: number) => {
@@ -33,7 +33,7 @@ const MusicModal: React.FC<Props> = (props) => {
     <Modal {...modalProps} className="flex justify-center items-center">
       <Paper className="w-auto max-w-[75vw]">
         <Box className="flex justify-end p-2 border-b-2 border-b-slate-500">
-          <IconButton onClick={props.handleClose}>
+          <IconButton onClick={handleClose}>
             <Close />
           </IconButton>
         </Box>

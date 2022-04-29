@@ -13,10 +13,9 @@ import {
 import { getFile } from "../utils/api";
 import {
   downloadBlob,
-  playBlob,
   setupPlayer,
   getNoteEvents,
-  placeHolderEvents,
+  loadBlob,
 } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
@@ -119,14 +118,6 @@ const MelodyList: React.FC<Props> = (props) => {
     );
   }
 
-  const playSong = (song: Blob) => {
-    if (!player) {
-      toast.error("Player has not been initialized!");
-      return;
-    }
-    playBlob(song, player);
-  };
-
   const getSong = async (path: string) => {
     var songBlob: Blob;
     if (path in cache) {
@@ -166,6 +157,8 @@ const MelodyList: React.FC<Props> = (props) => {
 
     const songBlob = await getSong(song.path);
     if (songBlob) {
+      await loadBlob(songBlob, player);
+      player.play();
       setState((prevState) => ({
         ...prevState,
         currentSong: song,
@@ -173,7 +166,6 @@ const MelodyList: React.FC<Props> = (props) => {
         playing: true,
         musicModalOpen: true,
       }));
-      playSong(songBlob);
     }
   };
 
@@ -203,7 +195,7 @@ const MelodyList: React.FC<Props> = (props) => {
         <MusicModal
           open={musicModalOpen}
           eventIndex={eventIndex}
-          events={placeHolderEvents}
+          events={getNoteEvents(player)}
           scale={currentSong.scale}
           tempo={120}
           handleClose={() =>
