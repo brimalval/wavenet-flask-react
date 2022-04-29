@@ -12,7 +12,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  ThemeProvider,
 } from "@mui/material";
+import { createTheme, useTheme } from "@mui/material/styles";
 import { Event } from "midi-player-js";
 
 type Props = Omit<ModalProps, "children"> & {
@@ -65,54 +67,84 @@ const MusicModal: React.FC<Props> = (props) => {
   };
 
   const scaleCopy = [...scale].reverse();
+  const mainTheme = useTheme();
+  // Create MUI theme
+  const getTheme = () =>
+    createTheme({
+      components: {
+        MuiTableCell: {
+          styleOverrides: {
+            root: {
+              width: "60px",
+            },
+            head: {
+              borderRight: `1px solid ${mainTheme.palette.primary.main}`,
+              "&:last-child": {
+                borderRight: "none",
+              },
+            },
+            body: {
+              // Apply a right border except for the last child
+              borderRight: "1px solid #ccc",
+              "&:last-child": {
+                borderRight: "none",
+              },
+            },
+          },
+        },
+      },
+    });
+  const theme = getTheme();
   return (
-    <Modal {...modalProps} className="flex justify-center items-center">
-      <Paper className="w-auto max-w-[75vw]">
-        <Box className="flex justify-end p-2 border-b-2 border-b-slate-500">
-          <IconButton onClick={handleClose}>
-            <Close />
-          </IconButton>
-        </Box>
-        <TableContainer component={Box} className="max-h-[75vh]">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell className="sticky left-0 bg-secondary-400 text-white">
-                  Note
-                </TableCell>
-                {events.map((event, index) => (
-                  <TableCell key={index} align="right" className="bg-secondary-400 text-white">
-                    {event.noteName}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {scaleCopy.map((note, index) => (
-                <TableRow key={index}>
-                  <TableCell className="sticky left-0 bg-secondary-400 text-white">
-                    {note}
-                  </TableCell>
-                  {events.map((event, innerIndex) => (
+    <ThemeProvider theme={theme}>
+      <Modal {...modalProps} className="flex justify-center items-center">
+        <Paper className="w-auto max-w-[80vw]">
+          <Box className="flex justify-end p-2 border-b-2 border-b-slate-500">
+            <IconButton onClick={handleClose}>
+              <Close />
+            </IconButton>
+          </Box>
+          <TableContainer component={Box} className="max-h-[80vh]">
+            <Table className="table-fixed">
+              <TableHead>
+                <TableRow>
+                  {events.map((event, index) => (
                     <TableCell
-                      key={innerIndex}
-                      className={
-                        isBeingPlayed(note, innerIndex) ? "bg-primary" : ""
-                      }
-                    ></TableCell>
+                      key={index}
+                      align="center"
+                      className="bg-secondary-400 text-white"
+                      width={5}
+                    >
+                      {event.noteName}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
-          {controlButton}
-          <Button onClick={handleStop} startIcon={<Stop/>}>Stop</Button>
-        </Box>
-      </Paper>
-    </Modal>
+              </TableHead>
+              <TableBody>
+                {scaleCopy.map((note, index) => (
+                  <TableRow key={index}>
+                    {events.map((event, innerIndex) => (
+                      <TableCell
+                        key={innerIndex}
+                        className={
+                          isBeingPlayed(note, innerIndex) ? "bg-primary" : ""
+                        }
+                      ></TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
+            {controlButton}
+            <Button onClick={handleStop} startIcon={<Stop />}>
+              Stop
+            </Button>
+          </Box>
+        </Paper>
+      </Modal>
+    </ThemeProvider>
   );
 };
 
