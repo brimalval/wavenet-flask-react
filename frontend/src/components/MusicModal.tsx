@@ -18,6 +18,11 @@ import {
 import { createTheme, useTheme } from "@mui/material/styles";
 import { Event } from "midi-player-js";
 import { useEffect, useRef } from "react";
+import QuaverIcon from "../assets/icons/QuaverIcon";
+import SemibreveIcon from "../assets/icons/SemibreveIcon";
+import MinimIcon from "../assets/icons/MinimIcon";
+import CrotchetIcon from "../assets/icons/CrotchetIcon";
+import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
 import Song from "../utils/types/Song";
 
 type Props = Omit<ModalProps, "children"> & {
@@ -67,6 +72,14 @@ const MusicModal: React.FC<Props> = (props) => {
     };
 
     return isSameIndex && (isSameNote || isEquivalentNote());
+  };
+
+  const durationCharacterMap = {
+    4: <SemibreveIcon />,
+    2: <MinimIcon />,
+    1: <CrotchetIcon />,
+    0.5: <QuaverIcon />,
+    0.25: <SemiquaverIcon />,
   };
 
   const currentNoteRef = useRef<HTMLTableCellElement>(null);
@@ -123,7 +136,7 @@ const MusicModal: React.FC<Props> = (props) => {
             <Table className="table-fixed">
               <TableHead>
                 <TableRow>
-                  {events.map((event, index) => (
+                  {song.notes.map((note, index) => (
                     <TableCell
                       key={index}
                       align="center"
@@ -132,7 +145,8 @@ const MusicModal: React.FC<Props> = (props) => {
                       ref={index === eventIndex ? currentNoteRef : null}
                     >
                       <Typography fontSize={12} variant="subtitle2">
-                        {event.noteName}
+                        {note.name}
+                        {durationCharacterMap[note.duration]}
                       </Typography>
                     </TableCell>
                   ))}
