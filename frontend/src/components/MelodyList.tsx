@@ -205,7 +205,7 @@ const MelodyList: React.FC<Props> = (props) => {
           open={musicModalOpen}
           eventIndex={eventIndex}
           events={getNoteEvents(player)}
-          scale={currentSong.scale}
+          song={currentSong}
           tempo={120}
           handleClose={() =>
             setState((prev) => ({ ...prev, musicModalOpen: false }))
@@ -226,7 +226,7 @@ const MelodyList: React.FC<Props> = (props) => {
           {props.songs.map((song, index) => (
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{song.notes.join(" ")}</TableCell>
+              <TableCell>{song.notes.map(note => note.name + " ")}</TableCell>
               <TableCell>
                 <div className="flex justify-end">
                   {getPlayPauseButton(song)}

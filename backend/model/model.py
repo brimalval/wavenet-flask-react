@@ -47,5 +47,7 @@ class Model:
             x.append(arg_y / 119)
             x_data = np.array(x).reshape(1, sequence_length, 1).astype("float32")
         # TODO: save created midi file
+
         self.converter.create_song_from_ints(output, is_varied, note_duration, file_name)
-        return [self.converter.map_int_to_note(int_note).nameWithOctave for int_note in output]
+        return [self.converter.map_int_to_note(int_note) for int_note in output]
+
