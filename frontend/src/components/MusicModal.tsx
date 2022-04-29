@@ -60,6 +60,8 @@ const MusicModal: React.FC<Props> = (props) => {
 
     return isSameIndex && (isSameNote || isEquivalentNote());
   };
+
+  const scaleCopy = [...scale].reverse();
   return (
     <Modal {...modalProps} className="flex justify-center items-center">
       <Paper className="w-auto max-w-[75vw]">
@@ -80,14 +82,14 @@ const MusicModal: React.FC<Props> = (props) => {
             </TableHead>
 
             <TableBody>
-              {scale.map((note, index) => (
+              {scaleCopy.map((note, index) => (
                 <TableRow key={index}>
                   <TableCell>{note}</TableCell>
                   {events.map((event, innerIndex) => (
                     <TableCell
                       key={innerIndex}
                       className={
-                        isBeingPlayed(note, innerIndex) ? "bg-red-500" : ""
+                        isBeingPlayed(note, innerIndex) ? "bg-primary" : ""
                       }
                     ></TableCell>
                   ))}
