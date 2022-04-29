@@ -35,7 +35,7 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length, key, file_name=None):
+    def predict(self, x_data, note_length, sequence_length, key, is_varied, note_duration=None, file_name=None):
         output = []
         x_data = np.array(x_data).reshape(1, sequence_length, 1).astype("float32") / 119
         for i in range(note_length):
@@ -47,5 +47,5 @@ class Model:
             x.append(arg_y / 119)
             x_data = np.array(x).reshape(1, sequence_length, 1).astype("float32")
         # TODO: save created midi file
-        self.converter.create_song_from_ints(output, file_name)
+        self.converter.create_song_from_ints(output, is_varied, note_duration, file_name)
         return [self.converter.map_int_to_note(int_note).nameWithOctave for int_note in output]
