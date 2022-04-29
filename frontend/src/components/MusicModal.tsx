@@ -13,9 +13,11 @@ import {
   TableHead,
   TableRow,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import { createTheme, useTheme } from "@mui/material/styles";
 import { Event } from "midi-player-js";
+import { useEffect, useRef } from "react";
 
 type Props = Omit<ModalProps, "children"> & {
   events: Event[];
@@ -66,6 +68,18 @@ const MusicModal: React.FC<Props> = (props) => {
     return isSameIndex && (isSameNote || isEquivalentNote());
   };
 
+  const currentNoteRef = useRef<HTMLTableCellElement>(null);
+  // Using the ref, scroll to the current note
+  useEffect(() => {
+    if (currentNoteRef.current) {
+      currentNoteRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }
+  }, [currentNoteRef, eventIndex]);
+
   const scaleCopy = [...scale].reverse();
   const mainTheme = useTheme();
   // Create MUI theme
@@ -114,8 +128,11 @@ const MusicModal: React.FC<Props> = (props) => {
                       align="center"
                       className="bg-secondary-400 text-white"
                       width={5}
+                      ref={index === eventIndex ? currentNoteRef : null}
                     >
-                      {event.noteName}
+                      <Typography fontSize={12} variant="subtitle2">
+                        {event.noteName}
+                      </Typography>
                     </TableCell>
                   ))}
                 </TableRow>
