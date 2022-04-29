@@ -37,7 +37,8 @@ class Model:
 
     def predict(self, x_data, note_length, sequence_length, key, is_varied, note_duration=None, file_name=None):
         output = []
-        x_data = np.array(x_data).reshape(1, sequence_length, 1).astype("float32") / 119
+        x_data = np.array(x_data).reshape(
+            1, sequence_length, 1).astype("float32") / 119
         for i in range(note_length):
             y = self.model.predict(x_data).ravel()
             arg_y = self.filter_note_with_key(y, key)
@@ -45,9 +46,10 @@ class Model:
             x = x_data.ravel().tolist()
             x.pop(0)
             x.append(arg_y / 119)
-            x_data = np.array(x).reshape(1, sequence_length, 1).astype("float32")
+            x_data = np.array(x).reshape(
+                1, sequence_length, 1).astype("float32")
         # TODO: save created midi file
 
-        self.converter.create_song_from_ints(output, is_varied, note_duration, file_name)
-        return [self.converter.map_int_to_note(int_note) for int_note in output]
-
+        self.converter.create_song_from_ints(
+            output, is_varied, note_duration, file_name)
+        return [self.converter.map_int_to_note(int_note, is_varied, note_duration) for int_note in output]

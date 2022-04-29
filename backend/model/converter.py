@@ -42,8 +42,8 @@ class Converter:
         return stream_result
 
     # Function to write a music21 stream to a midi file
-    def create_song_from_ints(self, notes, is_varied, note_duration=None, file_name="output", ):
-        stream_result = self.create_midi_stream([self.map_int_to_note(note_int, is_varied) for note_int in notes])
+    def create_song_from_ints(self, notes, is_varied, note_duration=None, file_name="output"):
+        stream_result = self.create_midi_stream([self.map_int_to_note(note_int, is_varied, note_duration) for note_int in notes])
         stream_result.write('midi', f'{file_name}.mid')
 
     # Function to map integers to music21 notes
@@ -79,7 +79,7 @@ class Converter:
             scale = [note_int for note_int in scale if note_int < MAX_NOTE_VAL]
         else:
             scale = [self.map_int_to_note(
-                note_int).nameWithOctave for note_int in scale if note_int < MAX_NOTE_VAL]
+                note_int, True).nameWithOctave for note_int in scale if note_int < MAX_NOTE_VAL]
 
         return scale
 

@@ -24,10 +24,13 @@ model.load("model/save_128_256_2_2_4_120_limit_all/weights_only.h5")
 def predict():
     # Take the request json
     data = request.get_json()
+    print(data)
     # Get the data from the request
     key = data['key']
-    length = data['length'] if 'length' in data else 25
+    length = data['noteCount'] if 'noteCount' in data else 25
     melody_count = data['melodyCount'] if 'melodyCount' in data else 1
+    is_varied = data['variedRhythm']
+    note_duration = data['noteDuration']
 
     results = []
     for i in range(melody_count):
@@ -37,8 +40,8 @@ def predict():
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
-        result = model.predict(x, length, sequence_length, key, upload_path)
-        print("KEY", key)
+        result = model.predict(x, length, sequence_length,
+                               key, is_varied, note_duration, upload_path)
         results.append({
             "notes": [
                 {
