@@ -1,6 +1,7 @@
-import { Close } from "@mui/icons-material";
+import { Close, Stop } from "@mui/icons-material";
 import {
   Box,
+  Button,
   IconButton,
   Modal,
   ModalProps,
@@ -21,6 +22,7 @@ type Props = Omit<ModalProps, "children"> & {
   eventIndex: number;
   handleClose: () => void;
   controlButton: React.ReactElement;
+  handleStop: () => void;
 };
 
 const MusicModal: React.FC<Props> = (props) => {
@@ -31,6 +33,7 @@ const MusicModal: React.FC<Props> = (props) => {
     eventIndex,
     controlButton,
     handleClose,
+    handleStop,
     ...modalProps
   } = props;
 
@@ -106,6 +109,7 @@ const MusicModal: React.FC<Props> = (props) => {
         </TableContainer>
         <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
           {controlButton}
+          <Button onClick={handleStop} startIcon={<Stop/>}>Stop</Button>
         </Box>
       </Paper>
     </Modal>

@@ -169,6 +169,15 @@ const MelodyList: React.FC<Props> = (props) => {
     }
   };
 
+  const handleStop = () => {
+    player.stop();
+    setState((prev) => ({
+      ...prev,
+      playing: false,
+      eventIndex: 0,
+    }));
+  };
+
   const getPlayPauseButton = (song: Song) => {
     return song.path === currentSong?.path && playing ? (
       <Button
@@ -201,6 +210,7 @@ const MelodyList: React.FC<Props> = (props) => {
           handleClose={() =>
             setState((prev) => ({ ...prev, musicModalOpen: false }))
           }
+          handleStop={handleStop}
           controlButton={getPlayPauseButton(currentSong)}
         />
       )}
