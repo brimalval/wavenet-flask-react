@@ -16,6 +16,7 @@ import {
   playBlob,
   setupPlayer,
   getNoteEvents,
+  placeHolderEvents,
 } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
@@ -69,7 +70,11 @@ const MelodyList: React.FC<Props> = (props) => {
           }));
         });
         newPlayer.on("endOfFile", () => {
-          setState((prevState) => ({ ...prevState, playing: false, eventIndex: 0 }));
+          setState((prevState) => ({
+            ...prevState,
+            playing: false,
+            eventIndex: 0,
+          }));
         });
         setPlayer(newPlayer);
       } catch (e) {
@@ -198,7 +203,7 @@ const MelodyList: React.FC<Props> = (props) => {
         <MusicModal
           open={musicModalOpen}
           eventIndex={eventIndex}
-          events={[]}
+          events={placeHolderEvents}
           scale={currentSong.scale}
           tempo={120}
           handleClose={() =>

@@ -1,14 +1,17 @@
-import { ExitToApp } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import {
   Box,
-  Button,
+  IconButton,
   Modal,
   ModalProps,
   Paper,
-  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import { Event } from "midi-player-js";
-import Song from "../utils/types/Song";
 
 type Props = Omit<ModalProps, "children"> & {
   events: Event[];
@@ -22,17 +25,51 @@ type Props = Omit<ModalProps, "children"> & {
 const MusicModal: React.FC<Props> = (props) => {
   const { events, scale, tempo, eventIndex, controlButton, ...modalProps } =
     props;
+
+  const isBeingPlayed = (note: string, index: number) => {
+    return eventIndex > 0 && eventIndex - 1 === index && events[eventIndex - 1].noteName === note;
+  };
   return (
     <Modal {...modalProps} className="flex justify-center items-center">
-      <Paper>
-        <Box>
-          <Button onClick={props.handleClose}>
-            <ExitToApp />
-          </Button>
+      <Paper className="w-auto max-w-[75vw]">
+        <Box className="flex justify-end p-2 border-b-2 border-b-slate-500">
+          <IconButton onClick={props.handleClose}>
+            <Close />
+          </IconButton>
         </Box>
-        <Typography variant="h6">Hello world</Typography>
-        <Typography variant="h6">Event index: {eventIndex}</Typography>
-        {controlButton}
+        <Box className="p-2 overflow-auto">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Note</TableCell>
+                {events.map((event, index) => (
+                  <TableCell key={index}>{event.noteName}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {scale.map((note, index) => (
+                <TableRow key={index}>
+                  <TableCell>{note}</TableCell>
+                  {events.map((event, innerIndex) => (
+                    <TableCell
+                      key={innerIndex}
+                      className={
+                        isBeingPlayed(note, innerIndex)
+                          ? "bg-red-500"
+                          : ""
+                      }
+                    ></TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+        <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
+          {controlButton}
+        </Box>
       </Paper>
     </Modal>
   );
