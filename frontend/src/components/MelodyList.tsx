@@ -226,7 +226,7 @@ const MelodyList: React.FC<Props> = (props) => {
           {props.songs.map((song, index) => (
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{song.notes.join(" ")}</TableCell>
+              <TableCell>{song.notes.map(note => note.name + " ")}</TableCell>
               <TableCell>
                 <div className="flex justify-end">
                   {getPlayPauseButton(song)}

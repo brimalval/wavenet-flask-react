@@ -40,7 +40,12 @@ def predict():
         result = model.predict(x, length, sequence_length, key, upload_path)
         print("KEY", key)
         results.append({
-            "notes": result,
+            "notes": [
+                {
+                    "name": x.nameWithOctave,
+                    "duration": x.quarterLength,
+                } for x in result
+            ],
             "path": upload_path + ".mid",
             "scale": Converter().get_scale(key=key, notes_as_ints=False)
         })
