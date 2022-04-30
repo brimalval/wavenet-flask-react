@@ -61,12 +61,18 @@ const MelodyList: React.FC<Props> = (props) => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        const newPlayer = await setupPlayer(instrument, () => {
-          setState((prevState) => ({
-            ...prevState,
-            eventIndex: prevState.eventIndex + 1,
-          }));
-        });
+        const newPlayer = await setupPlayer(
+          instrument,
+          cache[currentSong?.path ?? ""],
+          () => {
+            setState((prevState) => {
+              return {
+                ...prevState,
+                eventIndex: prevState.eventIndex + 1,
+              };
+            });
+          }
+        );
         newPlayer.on("endOfFile", () => {
           setState((prevState) => ({
             ...prevState,

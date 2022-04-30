@@ -13,6 +13,7 @@ export const downloadBlob = (blob: Blob, fileName?: string) => {
 
 export const setupPlayer = async (
   instrument: Soundfont.InstrumentName,
+  songBlob?: Blob,
   notePlayCallback?: () => any
 ) => {
   // Set up the player
@@ -30,6 +31,9 @@ export const setupPlayer = async (
       soundfontPlayer.stop();
     }
   });
+  if (songBlob) {
+    await loadBlob(songBlob, midiPlayer);
+  }
   return midiPlayer;
 };
 
