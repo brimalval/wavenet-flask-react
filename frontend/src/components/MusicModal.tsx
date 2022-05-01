@@ -3,11 +3,9 @@ import {
   Box,
   Button,
   IconButton,
-  Input,
   Modal,
   ModalProps,
   Paper,
-  Slider,
   Table,
   TableBody,
   TableCell,
@@ -18,19 +16,20 @@ import {
   Typography,
 } from "@mui/material";
 import { createTheme, useTheme } from "@mui/material/styles";
-import { Event } from "midi-player-js";
+import { Player } from "midi-player-js";
 import { useEffect, useRef } from "react";
+import { getNoteEvents } from "../utils/helpers";
 import QuaverIcon from "../assets/icons/QuaverIcon";
 import SemibreveIcon from "../assets/icons/SemibreveIcon";
 import MinimIcon from "../assets/icons/MinimIcon";
 import CrotchetIcon from "../assets/icons/CrotchetIcon";
 import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
 import Song from "../utils/types/Song";
+import TempoSlider from "./TempoSlider";
 
 type Props = Omit<ModalProps, "children"> & {
-  events: Event[];
   song: Song;
-  tempo: number;
+  player: Player;
   eventIndex: number;
   handleClose: () => void;
   controlButton: React.ReactElement;
@@ -39,9 +38,8 @@ type Props = Omit<ModalProps, "children"> & {
 
 const MusicModal: React.FC<Props> = (props) => {
   const {
-    events,
     song,
-    tempo,
+    player,
     eventIndex,
     controlButton,
     handleClose,
@@ -49,6 +47,7 @@ const MusicModal: React.FC<Props> = (props) => {
     ...modalProps
   } = props;
 
+  const events = getNoteEvents(player);
   const isBeingPlayed = (note: string, index: number) => {
     if (eventIndex < 1) {
       return false;
@@ -170,34 +169,7 @@ const MusicModal: React.FC<Props> = (props) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Box className="p-10 flex justify-center">
-            <Box className="flex space-x-4">
-              <Typography id="tempo">Tempo:</Typography>
-              <Input
-                id="tempo"
-                name="tempo"
-                type="number"
-                size="small"
-                value={120}
-                onChange={(e) => {console.log(e)}}
-                inputProps={{
-                  min: 45,
-                  max: 280,
-                }}
-              />
-            </Box>
-            <Slider
-              value={120}
-              onChange={(event, newValue) => {
-                console.log(event);
-              }}
-              aria-labelledby="tempo-slider"
-              valueLabelDisplay="auto"
-              step={1}
-              min={45}
-              max={280}
-            />
-          </Box>
+          <TempoSlider player={player} />
           <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
             {controlButton}
             <Button onClick={handleStop} startIcon={<Stop />}>

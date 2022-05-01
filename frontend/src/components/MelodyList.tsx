@@ -14,7 +14,6 @@ import { getFile } from "../utils/api";
 import {
   downloadBlob,
   setupPlayer,
-  getNoteEvents,
   loadBlob,
 } from "../utils/helpers";
 import Song from "../utils/types/Song";
@@ -197,9 +196,8 @@ const MelodyList: React.FC<Props> = (props) => {
         <MusicModal
           open={musicModalOpen}
           eventIndex={eventIndex}
-          events={getNoteEvents(player)}
           song={currentSong}
-          tempo={120}
+          player={player}
           handleClose={() => {
             player.stop();
             setState((prev) => ({
