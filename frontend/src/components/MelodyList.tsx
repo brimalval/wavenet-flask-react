@@ -11,11 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { getFile } from "../utils/api";
-import {
-  downloadBlob,
-  setupPlayer,
-  loadBlob,
-} from "../utils/helpers";
+import { downloadBlob, setupPlayer, loadBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
 import { Player } from "midi-player-js";
@@ -75,7 +71,6 @@ const MelodyList: React.FC<Props> = (props) => {
         newPlayer.on("endOfFile", () => {
           setState((prevState) => ({
             ...prevState,
-            playing: false,
             eventIndex: 0,
           }));
         });
@@ -143,6 +138,8 @@ const MelodyList: React.FC<Props> = (props) => {
 
     if (song.path === currentSong?.path && player.getFilesize()) {
       player.play();
+      console.log("Im in here");
+      await (player as any).setTempo(280);
       setState((prev) => ({ ...prev, playing: true, musicModalOpen: true }));
       return;
     }
