@@ -23,6 +23,7 @@ import MelodyList from "../components/MelodyList";
 import { InstrumentName } from "soundfont-player";
 import instrumentNamesArray from "../utils/types/Instrument";
 import * as Yup from "yup";
+import Footer from "../components/Footer";
 
 function Dashboard() {
   type KeyOption = {
@@ -116,96 +117,97 @@ function Dashboard() {
   });
 
   return (
-    <div className="w-full p-6 flex flex-col">
-      <form onSubmit={handleSubmit}>
-        <Grid container rowSpacing={2}>
-          <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
-            <DashboardCard title="Melody Characteristics">
-              <TextField
-                label="No. of Melodies"
-                id="melodyCount"
-                name="melodyCount"
-                type="number"
-                value={values.melodyCount}
-                onChange={handleChange}
-                inputProps={{
-                  min: 1,
-                  max: 10,
-                }}
-                error={!!errors.melodyCount}
-                helperText={errors.melodyCount ?? " "}
-              />
-              <Autocomplete
-                id="sound"
-                value={values.sound}
-                defaultValue={undefined}
-                onChange={(event, newValue) => {
-                  setFieldValue("sound", newValue ?? "");
-                }}
-                options={instrumentNamesArray}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Sound"
-                    variant="outlined"
-                    margin="normal"
-                    error={!!errors.sound}
-                    helperText={errors.sound ?? " "}
-                    fullWidth
-                  />
-                )}
-              />
-            </DashboardCard>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3} className="md:pr-3">
-            <DashboardCard title="Key" className="h-full">
-              <Tooltip title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s).">
-                <Autocomplete
-                  id="key"
-                  defaultValue={keyOptions[0]}
-                  groupBy={(option) => option.scale}
-                  onChange={(event, value) => {
-                    setFieldValue("key", value);
+    <>
+      <div className="w-full p-6 flex flex-col">
+        <form onSubmit={handleSubmit}>
+          <Grid container rowSpacing={2}>
+            <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
+              <DashboardCard title="Melody Characteristics">
+                <TextField
+                  label="No. of Melodies"
+                  id="melodyCount"
+                  name="melodyCount"
+                  type="number"
+                  value={values.melodyCount}
+                  onChange={handleChange}
+                  inputProps={{
+                    min: 1,
+                    max: 10,
                   }}
-                  getOptionLabel={(option) => option.label}
-                  isOptionEqualToValue={(option, check) =>
-                    option.value === check.value
-                  }
-                  options={keyOptions}
+                  error={!!errors.melodyCount}
+                  helperText={errors.melodyCount ?? " "}
+                />
+                <Autocomplete
+                  id="sound"
+                  value={values.sound}
+                  defaultValue={undefined}
+                  onChange={(event, newValue) => {
+                    setFieldValue("sound", newValue ?? "");
+                  }}
+                  options={instrumentNamesArray}
+                  getOptionLabel={(option) => option}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder="Select Key"
-                      id="key"
-                      error={!!errors.key}
-                      helperText={errors.key ?? " "}
+                      label="Sound"
+                      variant="outlined"
+                      margin="normal"
+                      error={!!errors.sound}
+                      helperText={errors.sound ?? " "}
+                      fullWidth
                     />
                   )}
                 />
-              </Tooltip>
-            </DashboardCard>
-          </Grid>
+              </DashboardCard>
+            </Grid>
 
-          <Grid item xs={12} md={6}>
-            <DashboardCard title="Rhythm Characteristics" className="h-full">
-              <Grid container spacing={4}>
-                <Grid item xs={6} className="flex items-center">
-                  <FormControlLabel
-                    value="start"
-                    className="mb-10"
-                    control={
-                      <Switch
-                        name="variedRhythm"
-                        color="primary"
-                        onChange={handleChange}
-                      />
+            <Grid item xs={12} sm={6} md={3} className="md:pr-3">
+              <DashboardCard title="Key" className="h-full">
+                <Tooltip title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s).">
+                  <Autocomplete
+                    id="key"
+                    defaultValue={keyOptions[0]}
+                    groupBy={(option) => option.scale}
+                    onChange={(event, value) => {
+                      setFieldValue("key", value);
+                    }}
+                    getOptionLabel={(option) => option.label}
+                    isOptionEqualToValue={(option, check) =>
+                      option.value === check.value
                     }
-                    label="Varied Rhythm"
-                    labelPlacement="start"
+                    options={keyOptions}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder="Select Key"
+                        id="key"
+                        error={!!errors.key}
+                        helperText={errors.key ?? " "}
+                      />
+                    )}
                   />
-                  {/* <TextField
+                </Tooltip>
+              </DashboardCard>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <DashboardCard title="Rhythm Characteristics" className="h-full">
+                <Grid container spacing={4}>
+                  <Grid item xs={6} className="flex items-center">
+                    <FormControlLabel
+                      value="start"
+                      className="mb-10"
+                      control={
+                        <Switch
+                          name="variedRhythm"
+                          color="primary"
+                          onChange={handleChange}
+                        />
+                      }
+                      label="Varied Rhythm"
+                      labelPlacement="start"
+                    />
+                    {/* <TextField
                     fullWidth
                     label="Lowest Note Duration"
                     id="rhythmType"
@@ -213,81 +215,83 @@ function Dashboard() {
                     name="rhythmType"
                     type="number"
                   /> */}
+                  </Grid>
+                  <Grid item xs={6}>
+                    {/* Spacer */}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Tooltip
+                      placement="top"
+                      title='All generated notes will have the selected duration. This only applies if "Varied Rhythm" is checked.'
+                    >
+                      <FormControl fullWidth>
+                        <InputLabel id="noteDurationLabel">
+                          Note Duration
+                        </InputLabel>
+                        <Select
+                          disabled={values.variedRhythm}
+                          inputProps={{
+                            readOnly: values.variedRhythm,
+                          }}
+                          value={values.noteDuration}
+                          labelId="noteDurationLabel"
+                          label="Note Duration"
+                          id="noteDuration"
+                          name="noteDuration"
+                          onChange={handleChange}
+                          type="number"
+                          error={!!errors.noteDuration}
+                        >
+                          {noteDurations.map((noteDuration) => (
+                            <MenuItem
+                              key={noteDuration.value}
+                              value={noteDuration.value}
+                            >
+                              {noteDuration.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText error={!!errors.noteDuration}>
+                          {errors.noteDuration ?? " "}
+                        </FormHelperText>
+                      </FormControl>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      label="No. of Notes"
+                      id="noteCount"
+                      name="noteCount"
+                      type="number"
+                      value={values.noteCount}
+                      onChange={handleChange}
+                      error={!!errors.noteCount}
+                      helperText={errors.noteCount ?? " "}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  {/* Spacer */}
-                </Grid>
-                <Grid item xs={6}>
-                  <Tooltip
-                    placement="top"
-                    title='All generated notes will have the selected duration. This only applies if "Varied Rhythm" is checked.'
-                  >
-                    <FormControl fullWidth>
-                      <InputLabel id="noteDurationLabel">
-                        Note Duration
-                      </InputLabel>
-                      <Select
-                        disabled={values.variedRhythm}
-                        inputProps={{
-                          readOnly: values.variedRhythm,
-                        }}
-                        value={values.noteDuration}
-                        labelId="noteDurationLabel"
-                        label="Note Duration"
-                        id="noteDuration"
-                        name="noteDuration"
-                        onChange={handleChange}
-                        type="number"
-                        error={!!errors.noteDuration}
-                      >
-                        {noteDurations.map((noteDuration) => (
-                          <MenuItem
-                            key={noteDuration.value}
-                            value={noteDuration.value}
-                          >
-                            {noteDuration.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText error={!!errors.noteDuration}>
-                        {errors.noteDuration ?? " "}
-                      </FormHelperText>
-                    </FormControl>
-                  </Tooltip>
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    fullWidth
-                    label="No. of Notes"
-                    id="noteCount"
-                    name="noteCount"
-                    type="number"
-                    value={values.noteCount}
-                    onChange={handleChange}
-                    error={!!errors.noteCount}
-                    helperText={errors.noteCount ?? " "}
-                  />
-                </Grid>
-              </Grid>
-            </DashboardCard>
-          </Grid>
+              </DashboardCard>
+            </Grid>
 
-          <Grid item xs={1}>
-            <LoadingButton
-              loading={isSubmitting}
-              loadingPosition="start"
-              startIcon={<AddIcon />}
-              type="submit"
-              variant="contained"
-              className="bg-primary"
-            >
-              Generate
-            </LoadingButton>
+            <Grid item xs={1}>
+              <LoadingButton
+                loading={isSubmitting}
+                loadingPosition="start"
+                startIcon={<AddIcon />}
+                type="submit"
+                variant="contained"
+                className="bg-primary"
+              >
+                Generate
+              </LoadingButton>
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
-      <MelodyList songs={songs} instrument={values.sound} />
-    </div>
+        </form>
+        <MelodyList songs={songs} instrument={values.sound} />
+      </div>
+      <Footer />
+    </>
   );
 }
 

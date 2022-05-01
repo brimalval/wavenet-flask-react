@@ -29,7 +29,7 @@ function MainLayout() {
           </Typography>
         </Link>
       </header>
-      <main className="min-h-[calc(100vh-65px)] h-full bg-gray-200">
+      <main className="min-h-[calc(100vh-65px)] h-full flex flex-col justify-between bg-gray-200">
         <Outlet />
       </main>
     </>
