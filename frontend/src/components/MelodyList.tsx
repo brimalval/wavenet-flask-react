@@ -71,6 +71,7 @@ const MelodyList: React.FC<Props> = (props) => {
         newPlayer.on("endOfFile", () => {
           setState((prevState) => ({
             ...prevState,
+            playing: false,
             eventIndex: 0,
           }));
         });
@@ -166,10 +167,10 @@ const MelodyList: React.FC<Props> = (props) => {
   };
 
   const getPlayPauseButton = (song: Song, extraAction?: () => any) => {
-    const handleClick = () => {
+    const handleClick = async () => {
       handlePlay(song);
       if (extraAction) {
-        extraAction();
+        await extraAction();
       }
       (window as any).player = player;
     };

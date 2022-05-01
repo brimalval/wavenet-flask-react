@@ -31,11 +31,12 @@ export const setupPlayer = async (
       soundfontPlayer.stop();
     }
   });
+  // TODO: Figure out how to fix the tempo getting changed once the loop restarts
   // For some reason midi-player-js type defs don't say that stop and play are async
   midiPlayer.on("endOfFile", async () => {
     await midiPlayer.skipToPercent(0);
-    await midiPlayer.play();
-  })
+    // await midiPlayer.play();
+  });
   if (songBlob) {
     await loadBlob(songBlob, midiPlayer);
   }
