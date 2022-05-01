@@ -24,6 +24,7 @@ import { InstrumentName } from "soundfont-player";
 import instrumentNamesArray from "../utils/types/Instrument";
 import * as Yup from "yup";
 import Footer from "../components/Footer";
+import { toast } from "material-react-toastify";
 
 function Dashboard() {
   type KeyOption = {
@@ -280,6 +281,17 @@ function Dashboard() {
                 loadingPosition="start"
                 startIcon={<AddIcon />}
                 type="submit"
+                onClick={() => {
+                  if (Object.keys(errors).length !== 0) {
+                    Object.keys(errors).forEach((key) => {
+                      const errorKey = key as keyof typeof errors;
+                      if (errors[errorKey]) {
+                        const error = errors[errorKey];
+                        toast.error(`${key}: ${error}`);
+                      }
+                    });
+                  }
+                }}
                 variant="contained"
                 className="bg-primary"
               >
