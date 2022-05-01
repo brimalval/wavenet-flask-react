@@ -98,7 +98,7 @@ function Dashboard() {
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
       noteCount: 10,
-      noteDuration: "",
+      noteDuration: "quarter",
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
@@ -231,6 +231,7 @@ function Dashboard() {
                         inputProps={{
                           readOnly: values.variedRhythm,
                         }}
+                        value={values.noteDuration}
                         labelId="noteDurationLabel"
                         label="Note Duration"
                         id="noteDuration"
