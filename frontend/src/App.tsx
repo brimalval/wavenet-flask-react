@@ -2,6 +2,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import createPalette from "@mui/material/styles/createPalette";
 import createTypography from "@mui/material/styles/createTypography";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import HomeLayout from "./layouts/HomeLayout";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
@@ -25,11 +26,15 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route index element={<Home />} />
+          <Route path="/" element={<HomeLayout />}>
+            <Route index element={<Home />} />
+          </Route>
           <Route path="/dashboard" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
           </Route>
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<HomeLayout />}>
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
