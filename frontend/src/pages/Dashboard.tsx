@@ -229,7 +229,7 @@ function Dashboard() {
                       <Select
                         disabled={values.variedRhythm}
                         inputProps={{
-                          readonly: values.variedRhythm,
+                          readOnly: values.variedRhythm,
                         }}
                         labelId="noteDurationLabel"
                         label="Note Duration"
