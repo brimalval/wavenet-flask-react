@@ -1,19 +1,18 @@
 import { Box, Typography, Input, Slider } from "@mui/material";
 import { Player } from "midi-player-js";
-import { useState } from "react";
 
 type Props = {
   player: Player;
+  value: number;
+  setValue: (value: number) => void;
 };
 
 const TempoSlider: React.FC<Props> = (props) => {
-  const [tempo, setTempo] = useState(120);
-  const { player } = props;
+  const { player, value, setValue } = props;
   type TextElement = HTMLTextAreaElement | HTMLInputElement;
   const handleChange: React.ChangeEventHandler<TextElement> = (event) => {
-    console.log(event.target.value);
     (player as any).setTempo(event.target.value);
-    setTempo(Number(event.target.value));
+    setValue(Number(event.target.value));
   };
   type SliderChangeEvent = (
     event: Event,
@@ -22,7 +21,7 @@ const TempoSlider: React.FC<Props> = (props) => {
   ) => void;
   const handleSliderChange: SliderChangeEvent = (event, value) => {
     (player as any).setTempo(value);
-    setTempo(value as number);
+    setValue(value as number);
   };
   return (
     <Box className="p-10 flex justify-center">
@@ -33,7 +32,7 @@ const TempoSlider: React.FC<Props> = (props) => {
           name="tempo"
           type="number"
           size="small"
-          value={tempo}
+          value={value}
           onChange={handleChange}
           inputProps={{
             min: 45,
@@ -42,7 +41,7 @@ const TempoSlider: React.FC<Props> = (props) => {
         />
       </Box>
       <Slider
-        value={tempo}
+        value={value}
         onChange={handleSliderChange}
         aria-labelledby="tempo-slider"
         valueLabelDisplay="auto"

@@ -33,7 +33,7 @@ export const setupPlayer = async (
   });
   // For some reason midi-player-js type defs don't say that stop and play are async
   midiPlayer.on("endOfFile", async () => {
-    await midiPlayer.stop();
+    await midiPlayer.skipToPercent(0);
     await midiPlayer.play();
   })
   if (songBlob) {

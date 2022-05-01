@@ -1,7 +1,6 @@
-import { Close, Stop } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import {
   Box,
-  Button,
   IconButton,
   Modal,
   ModalProps,
@@ -25,14 +24,14 @@ import MinimIcon from "../assets/icons/MinimIcon";
 import CrotchetIcon from "../assets/icons/CrotchetIcon";
 import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
 import Song from "../utils/types/Song";
-import TempoSlider from "./TempoSlider";
+import MusicModalControls from "./MusicModalControls";
 
 type Props = Omit<ModalProps, "children"> & {
   song: Song;
   player: Player;
   eventIndex: number;
   handleClose: () => void;
-  controlButton: React.ReactElement;
+  controlButtonGetter: (extraAction?: () => any) => JSX.Element;
   handleStop: () => void;
 };
 
@@ -41,7 +40,7 @@ const MusicModal: React.FC<Props> = (props) => {
     song,
     player,
     eventIndex,
-    controlButton,
+    controlButtonGetter,
     handleClose,
     handleStop,
     ...modalProps
@@ -169,13 +168,11 @@ const MusicModal: React.FC<Props> = (props) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TempoSlider player={player} />
-          <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
-            {controlButton}
-            <Button onClick={handleStop} startIcon={<Stop />}>
-              Stop
-            </Button>
-          </Box>
+          <MusicModalControls
+            player={player}
+            controlButtonGetter={controlButtonGetter}
+            handleStop={handleStop}
+          />
         </Paper>
       </Modal>
     </ThemeProvider>

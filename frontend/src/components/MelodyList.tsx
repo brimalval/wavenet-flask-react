@@ -15,7 +15,7 @@ import { downloadBlob, setupPlayer, loadBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
 import { Player } from "midi-player-js";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
 import MusicModal from "./MusicModal";
 
@@ -138,8 +138,6 @@ const MelodyList: React.FC<Props> = (props) => {
 
     if (song.path === currentSong?.path && player.getFilesize()) {
       player.play();
-      console.log("Im in here");
-      await (player as any).setTempo(280);
       setState((prev) => ({ ...prev, playing: true, musicModalOpen: true }));
       return;
     }
@@ -167,21 +165,20 @@ const MelodyList: React.FC<Props> = (props) => {
     }));
   };
 
-  const getPlayPauseButton = (song: Song) => {
+  const getPlayPauseButton = (song: Song, extraAction?: () => any) => {
+    const handleClick = () => {
+      handlePlay(song);
+      if (extraAction) {
+        extraAction();
+      }
+      (window as any).player = player;
+    };
     return song.path === currentSong?.path && playing ? (
-      <Button
-        variant="text"
-        startIcon={<Pause />}
-        onClick={() => handlePlay(song)}
-      >
+      <Button variant="text" startIcon={<Pause />} onClick={handleClick}>
         Pause
       </Button>
     ) : (
-      <Button
-        variant="text"
-        startIcon={<PlayArrow />}
-        onClick={() => handlePlay(song)}
-      >
+      <Button variant="text" startIcon={<PlayArrow />} onClick={handleClick}>
         Play
       </Button>
     );
@@ -205,7 +202,9 @@ const MelodyList: React.FC<Props> = (props) => {
             }));
           }}
           handleStop={handleStop}
-          controlButton={getPlayPauseButton(currentSong)}
+          controlButtonGetter={(extraAction) =>
+            getPlayPauseButton(currentSong, extraAction)
+          }
         />
       )}
       <Table>
