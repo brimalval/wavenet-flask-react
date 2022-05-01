@@ -2,17 +2,15 @@ import { Article, GitHub, MusicNote } from "@mui/icons-material";
 import {
   Box,
   Grid,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Typography,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-primary text-white p-7">
+    <footer className="bg-primary text-white p-7 mt-10">
       <Box>
         <Grid container>
           <Grid item xs={12} sm={7}>

@@ -10,11 +10,16 @@ function Home() {
         sm={8}
         className="flex flex-col items-start justify-center sm:pl-20 p-10 space-y-10 z-1"
       >
-        <Typography>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Hic ipsam
-          recusandae, omnis distinctio deserunt atque exercitationem amet
-          dolorem ipsum reiciendis alias, at numquam. Minus, iste ut dolorem
-          eveniet deleniti suscipit?
+        <Typography variant="body1">
+          A simple application to serve as an easy way to interact with an
+          implementation of the WaveNet architecture for generating MIDI
+          melodies.
+        </Typography>
+        <Typography variant="body1">
+          This is in partial fulfillment of "Automatic Generation of Pop Melody
+          Using a Neural Network Architecture based on WaveNet", a thesis of
+          three students from the Technological Institute of the Philippines -
+          Quezon City: Genrev Zapa, Brian Valencia, and Ayin Medina.
         </Typography>
         <Link to="/dashboard">
           <Button

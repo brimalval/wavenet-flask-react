@@ -118,7 +118,7 @@ function Dashboard() {
 
   return (
     <>
-      <div className="w-full p-6 flex flex-col">
+      <div className="w-full p-6 flex flex-col space-y-4">
         <form onSubmit={handleSubmit}>
           <Grid container rowSpacing={2}>
             <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
@@ -274,7 +274,7 @@ function Dashboard() {
               </DashboardCard>
             </Grid>
 
-            <Grid item xs={1}>
+            <Grid item xs={1} className="flex justify-center">
               <LoadingButton
                 loading={isSubmitting}
                 loadingPosition="start"
