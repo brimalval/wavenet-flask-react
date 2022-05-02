@@ -5,8 +5,8 @@ from converters import converters
 import os
 
 load_dotenv()
-app = Flask(__name__, static_folder="../frontend/build/static",
-            template_folder="../frontend/build")
+app = Flask(__name__, static_folder="./frontend/build/static",
+            template_folder="./frontend/build")
 app.url_map.converters['regex'] = converters.RegexConverter
 
 # Set upload folder
