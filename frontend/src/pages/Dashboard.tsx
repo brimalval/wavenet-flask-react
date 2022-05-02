@@ -95,7 +95,7 @@ function Dashboard() {
     isSubmitting,
   } = useFormik({
     initialValues: {
-      variedRhythm: false,
+      variedRhythm: true,
       melodyCount: 1,
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
@@ -202,6 +202,7 @@ function Dashboard() {
                         <Switch
                           name="variedRhythm"
                           color="primary"
+                          checked={values.variedRhythm}
                           onChange={handleChange}
                         />
                       }
@@ -275,7 +276,7 @@ function Dashboard() {
               </DashboardCard>
             </Grid>
 
-            <Grid item xs={1} className="flex justify-center">
+            <Grid item xs={12} className="text-center">
               <LoadingButton
                 loading={isSubmitting}
                 loadingPosition="start"

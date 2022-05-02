@@ -101,7 +101,7 @@ const MelodyList: React.FC<Props> = (props) => {
   if (songs.length === 0) {
     return (
       <Paper className="flex justify-center items-center p-5">
-        <Typography>Press "generate" to see some melodies!</Typography>
+        <Typography>Press "generate" for some melodies!</Typography>
       </Paper>
     );
   }
