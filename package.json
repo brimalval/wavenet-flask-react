@@ -1,0 +1,21 @@
+{
+  "name": "wavenet-flask-react",
+  "version": "1.0.0",
+  "description": "A simple application to serve as an easy way to interact with our group's implementation of the WaveNet architecture for generating MIDI melodies.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd frontend && npm install && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qbmsvalencia/wavenet-flask-react.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qbmsvalencia/wavenet-flask-react/issues"
+  },
+  "homepage": "https://github.com/qbmsvalencia/wavenet-flask-react#readme"
+}
