@@ -60,6 +60,7 @@ const Footer = () => {
                 <a
                   href="https://github.com/qbmsvalencia/wavenet-flask-react"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <ListItem className="hover:text-slate-300 duration-200">
                     <ListItemIcon>
@@ -71,6 +72,7 @@ const Footer = () => {
                 <a
                   href="https://github.com/zapagenrevdale/PopMelodyGenerationUsingWaveNet"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <ListItem className="hover:text-slate-300 duration-200">
                     <ListItemIcon>
@@ -79,7 +81,7 @@ const Footer = () => {
                     <ListItemText primary="WaveNet Implementation Repository" />
                   </ListItem>
                 </a>
-                <a href="#">
+                <a href="#" rel="noreferrer">
                   <ListItem className="hover:text-slate-300 duration-200">
                     <ListItemIcon>
                       <Article />
@@ -90,6 +92,7 @@ const Footer = () => {
                 <a
                   href="https://random-music-generators.herokuapp.com/melody"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <ListItem className="hover:text-slate-300 duration-200">
                     <ListItemIcon>

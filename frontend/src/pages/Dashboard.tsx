@@ -17,7 +17,7 @@ import { useFormik } from "formik";
 import DashboardCard from "../components/DashboardCard";
 import { Key, Note, Scale } from "../utils/types/Key";
 import Song from "../utils/types/Song";
-import { postKey } from "../utils/api";
+import { postParams } from "../utils/api";
 import { useState } from "react";
 import MelodyList from "../components/MelodyList";
 import { InstrumentName } from "soundfont-player";
@@ -104,7 +104,7 @@ function Dashboard() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      const response = await postKey({
+      const response = await postParams({
         ...values,
         key: values.key.value,
       });
