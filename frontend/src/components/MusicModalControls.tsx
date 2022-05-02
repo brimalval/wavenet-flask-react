@@ -18,7 +18,7 @@ const MusicModalControls: React.FC<Props> = (props) => {
   };
 
   return (
-    <>
+    <div>
       <TempoSlider value={tempo} setValue={handleChange} player={player} />
       <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
         {controlButtonGetter(async () => {
@@ -28,7 +28,7 @@ const MusicModalControls: React.FC<Props> = (props) => {
           Stop
         </Button>
       </Box>
-    </>
+    </div>
   );
 };
 

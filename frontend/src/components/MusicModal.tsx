@@ -88,7 +88,6 @@ const MusicModal: React.FC<Props> = (props) => {
     if (currentNoteRef.current) {
       currentNoteRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "center",
         inline: "center",
       });
     }
@@ -126,23 +125,28 @@ const MusicModal: React.FC<Props> = (props) => {
   return (
     <ThemeProvider theme={theme}>
       <Modal {...modalProps} className="flex justify-center items-center">
-        <Paper className="w-auto max-w-[80vw]">
+        <Paper className="sm:w-auto sm:max-w-[80vw] sm:h-auto xs:w-full xs:max-w-[100vw] xs:h-screen justify-between flex flex-col">
           <Box className="flex justify-end p-2 border-b-2 border-b-slate-500">
             <IconButton onClick={handleClose}>
               <Close />
             </IconButton>
           </Box>
           <TableContainer component={Box} className="max-h-[65vh]">
-            <Table className="table-fixed">
+            <Table className="table-fixed" stickyHeader>
               <TableHead>
                 <TableRow>
+                  <TableCell
+                    className="bg-secondary-400 text-white"
+                    align="center"
+                    ref={eventIndex === 0 ? currentNoteRef : null}
+                  >
+                    Scale
+                  </TableCell>
                   {song.notes.map((note, index) => (
                     <TableCell
                       key={index}
                       align="center"
                       className="bg-secondary-400 text-white"
-                      width={5}
-                      ref={index === eventIndex ? currentNoteRef : null}
                     >
                       <Typography fontSize={12} variant="subtitle2">
                         {note.name}
@@ -155,13 +159,31 @@ const MusicModal: React.FC<Props> = (props) => {
               <TableBody>
                 {scaleCopy.map((note, index) => (
                   <TableRow key={index}>
+                    <TableCell className="sticky left-0 text-white bg-secondary-400">
+                      <Typography
+                        fontSize={12}
+                        variant="subtitle2"
+                        className="leading-[5px]"
+                      >
+                        {note}
+                      </Typography>
+                    </TableCell>
                     {events.map((event, innerIndex) => (
                       <TableCell
                         key={innerIndex}
-                        className={
-                          isBeingPlayed(note, innerIndex) ? "bg-primary" : ""
+                        ref={
+                          isBeingPlayed(note, innerIndex)
+                            ? currentNoteRef
+                            : null
                         }
-                      ></TableCell>
+                        className={
+                          isBeingPlayed(note, innerIndex)
+                            ? "bg-primary text-white flex justify-center leading-[5px]"
+                            : ""
+                        }
+                      >
+                        {isBeingPlayed(note, innerIndex) ? note : ""}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))}
