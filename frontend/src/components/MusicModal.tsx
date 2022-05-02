@@ -29,6 +29,7 @@ import MusicModalControls from "./MusicModalControls";
 type Props = Omit<ModalProps, "children"> & {
   song: Song;
   player: Player;
+  showTempoSlider: boolean;
   eventIndex: number;
   handleClose: () => void;
   controlButtonGetter: (extraAction?: () => any) => JSX.Element;
@@ -41,6 +42,7 @@ const MusicModal: React.FC<Props> = (props) => {
     player,
     eventIndex,
     controlButtonGetter,
+    showTempoSlider,
     handleClose,
     handleStop,
     ...modalProps
@@ -193,6 +195,7 @@ const MusicModal: React.FC<Props> = (props) => {
           <MusicModalControls
             player={player}
             controlButtonGetter={controlButtonGetter}
+            showTempoSlider={showTempoSlider}
             handleStop={handleStop}
           />
         </Paper>

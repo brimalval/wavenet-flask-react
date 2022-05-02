@@ -26,16 +26,23 @@ type Props = {
 
 const MelodyList: React.FC<Props> = (props) => {
   const [
-    { player, currentSong, cache, playing, musicModalOpen, eventIndex },
+    { player, currentSong, cache, playing, paused, musicModalOpen, eventIndex },
     setState,
   ] = useState<{
     player?: Player;
     currentSong?: Song;
     cache: { [path: string]: Blob };
     playing: boolean;
+    paused: boolean;
     musicModalOpen: boolean;
     eventIndex: number;
-  }>({ cache: {}, playing: false, musicModalOpen: false, eventIndex: 0 });
+  }>({
+    cache: {},
+    playing: false,
+    paused: false,
+    musicModalOpen: false,
+    eventIndex: 0,
+  });
 
   const { songs, instrument } = props;
 
@@ -72,6 +79,7 @@ const MelodyList: React.FC<Props> = (props) => {
           setState((prevState) => ({
             ...prevState,
             playing: false,
+            paused: false,
             eventIndex: 0,
           }));
         });
@@ -131,7 +139,7 @@ const MelodyList: React.FC<Props> = (props) => {
   const handlePlay = async (song: Song) => {
     if (player.isPlaying()) {
       player.pause();
-      setState((prev) => ({ ...prev, playing: false }));
+      setState((prev) => ({ ...prev, playing: false, paused: true }));
       if (song.path === currentSong?.path) {
         return;
       }
@@ -139,7 +147,12 @@ const MelodyList: React.FC<Props> = (props) => {
 
     if (song.path === currentSong?.path && player.getFilesize()) {
       player.play();
-      setState((prev) => ({ ...prev, playing: true, musicModalOpen: true }));
+      setState((prev) => ({
+        ...prev,
+        playing: true,
+        paused: false,
+        musicModalOpen: true,
+      }));
       return;
     }
 
@@ -152,6 +165,7 @@ const MelodyList: React.FC<Props> = (props) => {
         currentSong: song,
         eventIndex: 0,
         playing: true,
+        paused: false,
         musicModalOpen: true,
       }));
     }
@@ -162,6 +176,7 @@ const MelodyList: React.FC<Props> = (props) => {
     setState((prev) => ({
       ...prev,
       playing: false,
+      paused: false,
       eventIndex: 0,
     }));
   };
@@ -192,12 +207,14 @@ const MelodyList: React.FC<Props> = (props) => {
           open={musicModalOpen}
           eventIndex={eventIndex}
           song={currentSong}
+          showTempoSlider={paused}
           player={player}
           handleClose={() => {
             player.stop();
             setState((prev) => ({
               ...prev,
               playing: false,
+              paused: false,
               musicModalOpen: false,
               eventIndex: 0,
             }));
