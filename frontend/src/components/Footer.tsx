@@ -12,7 +12,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-white p-7 mt-10">
       <Box>
-        <Grid container>
+        <Grid container rowSpacing={2}>
           <Grid item xs={12} sm={7}>
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
@@ -39,6 +39,10 @@ const Footer = () => {
                   the Philippines - Quezon City: Genrev Zapa, Brian Valencia,
                   and Ayin Medina.
                 </Typography>
+                <Typography variant="body1">
+                  The UI design of this application is based on the Random Music
+                  Generators application by Dave Cohen (Scraggo).
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -61,7 +65,7 @@ const Footer = () => {
                     <ListItemIcon>
                       <GitHub />
                     </ListItemIcon>
-                    <ListItemText primary="Application GitHub Repository" />
+                    <ListItemText primary="Application Repository" />
                   </ListItem>
                 </a>
                 <a
@@ -72,7 +76,7 @@ const Footer = () => {
                     <ListItemIcon>
                       <GitHub />
                     </ListItemIcon>
-                    <ListItemText primary="Model GitHub Repository" />
+                    <ListItemText primary="WaveNet Implementation Repository" />
                   </ListItem>
                 </a>
                 <a href="#">
