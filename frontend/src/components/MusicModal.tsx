@@ -161,7 +161,10 @@ const MusicModal: React.FC<Props> = (props) => {
               <TableBody>
                 {scaleCopy.map((note, index) => (
                   <TableRow key={index}>
-                    <TableCell className="sticky left-0 text-white bg-secondary-400">
+                    <TableCell
+                      className="sticky left-0 text-white bg-secondary-400"
+                      align="center"
+                    >
                       <Typography
                         fontSize={12}
                         variant="subtitle2"
@@ -180,7 +183,7 @@ const MusicModal: React.FC<Props> = (props) => {
                         }
                         className={
                           isBeingPlayed(note, innerIndex)
-                            ? "bg-primary text-white flex justify-center leading-[5px]"
+                            ? "bg-primary text-white text-center leading-[5px]"
                             : ""
                         }
                       >
