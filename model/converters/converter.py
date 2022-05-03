@@ -46,17 +46,24 @@ class Converter:
     # Function to write a music21 stream to a midi file
     def create_song_from_ints(self, notes, is_varied, note_duration=None, file_name="output"):
         stream_result = self.create_midi_stream(
-            [self.map_int_to_note(note_int, is_varied, note_duration) for note_int in notes])
+            [self.map_int_to_music21_obj(note_int, is_varied, note_duration) for note_int in notes])
         stream_result.write('midi', f'{file_name}.mid')
+        return stream_result
 
     # Function to map integers to music21 notes
     @staticmethod
-    def map_int_to_note(note_int, is_varied, note_duration=None):
+    def map_int_to_music21_obj(note_int, is_varied, note_duration=None):
         if note_int > MAX_NOTE_VAL:
             raise Exception(f'{note_int} is not a valid note integer')
+        # For rests
+        if note_int < 5:
+            note_result = note.Rest()
+            duration = list(duration_map.keys())[note_int % 5]
+            note.duration.type = duration if is_varied else note_duration
+            return note_result
         # Pitches come in groups of 5, get the pitch by floor dividing by 5 then modulus 12
-        pitch_int = ((note_int // 5) % 12)
-        pitch = list(notes_map.keys())[pitch_int]
+        pitch_int = (((note_int - 5) // 5) % 12)
+        pitch = list(notes_map.keys())[1:][pitch_int]
         # An octave is 12 notes with 5 durations each, so get the octave by dividing by 60
         # Add the minimum octave to the answer to get the correct octave
         # TODO: Make minimum octave configurable as a global constant
@@ -85,8 +92,14 @@ class Converter:
         if notes_as_ints:
             scale = [note_int for note_int in scale if note_int < MAX_NOTE_VAL]
         else:
-            scale = [self.map_int_to_note(
-                note_int, True).nameWithOctave for note_int in scale if note_int < MAX_NOTE_VAL]
+            new_scale = []
+            for note_int in scale:
+                if note_int < MAX_NOTE_VAL:
+                    music21_obj = self.map_int_to_music21_obj(note_int, True)
+                    if music21_obj.isNote:
+                        new_scale.append(music21_obj.nameWithOctave)
+
+            scale = new_scale
 
         return scale
 
@@ -107,12 +120,12 @@ if __name__ == "__main__":
     testme = Converter()
     scale = testme.get_scale("Bmaj")
     print(testme.get_scale("Bmaj"))
-    converted = [testme.map_int_to_note(item) for item in scale]
+    converted = [testme.map_int_to_music21_obj(item) for item in scale]
     i = 0
     for item in converted:
         print(scale[i], item.fullName)
         i += 1
     scale = testme.get_scale("Bmin")
     print(testme.get_scale("Bmin"))
-    print("converted", [testme.map_int_to_note(
+    print("converted", [testme.map_int_to_music21_obj(
         item).fullName for item in scale])

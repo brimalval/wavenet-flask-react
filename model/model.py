@@ -35,22 +35,29 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length, output_classes, key, is_varied, note_duration=None, file_name=None):
+    def predict(self, x_data, note_length, sequence_length, output_classes, key, is_varied, note_duration=None, file_name=None, get_stream=False):
+        note_count = 0
         output = []
         x_data = np.array(x_data).reshape(
-            1, sequence_length, 1).astype("float32") / (output_classes-1)
-        for i in range(note_length):
+            1, sequence_length, 1).astype("float32") / (output_classes - 1)
+        while note_count < note_length:
             y = self.model.predict(x_data).ravel()
-            arg_y = self.filter_note_with_key(y, key)
+            arg_y = np.argmax(y)
+            if arg_y >= 5:
+                arg_y = self.filter_note_with_key(y, key)
+                note_count += 1
             output.append(arg_y)
             x = x_data.ravel().tolist()
             x.pop(0)
-            x.append(arg_y / (output_classes-1))
+            x.append(arg_y / (output_classes - 1))
             x_data = np.array(x).reshape(
                 1, sequence_length, 1).astype("float32")
 
-        # TODO: save created midi file
-
-        self.converter.create_song_from_ints(
+        note_result = [self.converter.map_int_to_music21_obj(
+            int_note, is_varied, note_duration) for int_note in output]
+        stream_result = self.converter.create_song_from_ints(
             output, is_varied, note_duration, file_name)
-        return [self.converter.map_int_to_note(int_note, is_varied, note_duration) for int_note in output]
+
+        if (get_stream):
+            return note_result, stream_result
+        return note_result

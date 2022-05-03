@@ -20,6 +20,9 @@ model = Model(res_channel, skip_channel, stack_size, kernel_size,
 model.load("model/version_1_with_rests_sl_50/weights_only.h5")
 converter = Converter()
 
+DEFAULT_TEMPO = 120
+
+
 @api.route('/predict', methods=['POST'])
 def predict():
     # Take the request json
@@ -39,17 +42,22 @@ def predict():
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
-        result = model.predict(x, length, sequence_length,
-                               key, output_classes, is_varied, note_duration, upload_path)
+        result, stream = model.predict(x, length, sequence_length,
+                                       output_classes, key, is_varied, note_duration, upload_path, get_stream=True)
+        contents = []
+        for r in result:
+            if r.isNote:
+                name = r.nameWithOctave
+                contents.append({
+                    'name': name,
+                    'duration': r.quarterLength,
+                })
+
         results.append({
-            "notes": [
-                {
-                    "name": x.nameWithOctave,
-                    "duration": x.quarterLength,
-                } for x in result
-            ],
+            "notes": contents,
             "path": upload_path + ".mid",
-            "scale": converter.get_scale(key=key, notes_as_ints=False)
+            "scale": converter.get_scale(key=key, notes_as_ints=False),
+            "duration": ((stream.highestTime + 1) / DEFAULT_TEMPO) * 60
         })
     return jsonify(results)
 

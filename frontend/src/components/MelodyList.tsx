@@ -230,6 +230,7 @@ const MelodyList: React.FC<Props> = (props) => {
           <TableRow>
             <TableCell width={5}>No.</TableCell>
             <TableCell>Melody</TableCell>
+            <TableCell>Duration</TableCell>
             <TableCell></TableCell>
           </TableRow>
         </TableHead>
@@ -238,6 +239,11 @@ const MelodyList: React.FC<Props> = (props) => {
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{song.notes.map((note) => note.name + " ")}</TableCell>
+              <TableCell>
+                <Typography variant="body2">
+                  {song.duration.toFixed(2)} seconds
+                </Typography>
+              </TableCell>
               <TableCell>
                 <div className="flex justify-end">
                   {getPlayPauseButton(song)}
