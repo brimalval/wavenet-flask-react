@@ -14,7 +14,7 @@ class DilatedCausalConvolution1D(layers.Layer):
 
     def call(self, x, training=False):
         x = self.conv1D(x, training=training)
-        return x[:, :-self.index_of_ignored_data]
+        return x[:, self.index_of_ignored_data:]
 
 
 class ResidualBlock(layers.Layer):
@@ -46,9 +46,7 @@ class StacksResidualBlocks(layers.Layer):
 
         for stack_level, dilations_per_stack in enumerate(dilations):
             for layer_level, dilation_rate in enumerate(dilations_per_stack):
-                # name=f'residual_block_{stack_level}_{layer_level}'
                 residual_block = ResidualBlock(residual_channels, skip_channels, kernel_size, dilation_rate)
-                #                 self.add(residual_block)
                 self.residual_blocks.append(residual_block)
 
     def build_dilation(self, stack_size, layer_size):
