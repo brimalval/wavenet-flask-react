@@ -20,6 +20,7 @@ model = Model(res_channel, skip_channel, stack_size, kernel_size,
 model.load("model/version_1/weights_only.h5")
 converter = Converter()
 
+DEFAULT_BPM = 120
 
 @api.route('/predict', methods=['POST'])
 def predict():
@@ -40,8 +41,12 @@ def predict():
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
-        result = model.predict(x, length, sequence_length,
+        result, stream = model.predict(x, length, sequence_length,
                                key, output_classes, is_varied, note_duration, upload_path)
+        # Get quarterLengths of the stream
+        quarter_lengths = stream.highestTime
+        # Convert quarter lengths to seconds
+        duration = ((quarter_lengths + 1) / DEFAULT_BPM) * 60
         results.append({
             "notes": [
                 {
@@ -50,7 +55,8 @@ def predict():
                 } for x in result
             ],
             "path": upload_path + ".mid",
-            "scale": converter.get_scale(key=key, notes_as_ints=False)
+            "scale": converter.get_scale(key=key, notes_as_ints=False),
+            "duration": duration
         })
     return jsonify(results)
 

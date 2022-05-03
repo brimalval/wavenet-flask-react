@@ -47,6 +47,7 @@ class Converter:
         stream_result = self.create_midi_stream(
             [self.map_int_to_note(note_int, is_varied, note_duration) for note_int in notes])
         stream_result.write('midi', f'{file_name}.mid')
+        return stream_result
 
     # Function to map integers to music21 notes
     @staticmethod
