@@ -1,5 +1,6 @@
 from music21 import note, stream, converter
 from bidict import bidict
+import random
 
 notes_map = bidict({
     'C': 0,
@@ -43,7 +44,8 @@ class Converter:
 
     # Function to write a music21 stream to a midi file
     def create_song_from_ints(self, notes, is_varied, note_duration=None, file_name="output"):
-        stream_result = self.create_midi_stream([self.map_int_to_note(note_int, is_varied, note_duration) for note_int in notes])
+        stream_result = self.create_midi_stream(
+            [self.map_int_to_note(note_int, is_varied, note_duration) for note_int in notes])
         stream_result.write('midi', f'{file_name}.mid')
 
     # Function to map integers to music21 notes
@@ -82,6 +84,17 @@ class Converter:
                 note_int, True).nameWithOctave for note_int in scale if note_int < MAX_NOTE_VAL]
 
         return scale
+
+    def generate_random_notes(self, key, sequence_length):
+        x = []
+        scale = self.get_scale(key)
+        for _ in range(sequence_length):
+            random_pitch = random.choice(scale)
+            random_duration = random.randint(0, 4)
+            random_note = random_pitch + random_duration
+            x.append(random_note)
+        print(x)
+        return x
 
 
 # Test code
