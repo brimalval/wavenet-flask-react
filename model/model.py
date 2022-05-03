@@ -1,7 +1,7 @@
 from model.wavenet import WaveNet
 from tensorflow import keras
 import numpy as np
-from model.converters.converter import Converter
+from model.converter import Converter
 
 
 class Model:
@@ -35,7 +35,7 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length, output_classes, key, is_varied, note_duration=None, file_name=None):
+    def predict(self, x_data, note_length, sequence_length,  key, output_classes, is_varied, note_duration=None, file_name=None):
         output = []
         x_data = np.array(x_data).reshape(
             1, sequence_length, 1).astype("float32") / (output_classes-1)

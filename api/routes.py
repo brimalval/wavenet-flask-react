@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, current_app
 from model.model import Model
 import numpy as np
-from model.converters.converter import Converter
+from model.converter import Converter
 
 # from flask_api import status
 
@@ -13,12 +13,13 @@ skip_channel = 256
 stack_size = 2
 kernel_size = 2
 layer_size = 3
-output_classes = 125
+output_classes = 120
 sequence_length = 50
 model = Model(res_channel, skip_channel, stack_size, kernel_size,
               layer_size, output_classes, sequence_length)
-model.load("model/version_1_with_rests_sl_50/weights_only.h5")
+model.load("model/version_1/weights_only.h5")
 converter = Converter()
+
 
 @api.route('/predict', methods=['POST'])
 def predict():
