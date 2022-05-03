@@ -8,6 +8,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { getFile } from "../utils/api";
@@ -230,7 +231,8 @@ const MelodyList: React.FC<Props> = (props) => {
           <TableRow>
             <TableCell width={5}>No.</TableCell>
             <TableCell>Melody</TableCell>
-            <TableCell></TableCell>
+            <TableCell width={10}>Duration</TableCell>
+            <TableCell width={15}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -238,6 +240,13 @@ const MelodyList: React.FC<Props> = (props) => {
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{song.notes.map((note) => note.name + " ")}</TableCell>
+              <TableCell>
+                <Tooltip title="Assuming 120 BPM and x/4 time signature">
+                  <Typography variant="body2">
+                    {song.duration.toFixed(2)} seconds
+                  </Typography>
+                </Tooltip>
+              </TableCell>
               <TableCell>
                 <div className="flex justify-end">
                   {getPlayPauseButton(song)}
