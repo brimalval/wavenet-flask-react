@@ -1,4 +1,6 @@
-from flask import Flask, render_template, send_from_directory, jsonify
+import shutil
+from flask import Flask, render_template, send_from_directory
+from flask_apscheduler import APScheduler
 from dotenv import load_dotenv
 from api.routes import api
 from converters import converters
@@ -8,11 +10,20 @@ load_dotenv()
 app = Flask(__name__, static_folder="./frontend/build/static",
             template_folder="./frontend/build")
 app.url_map.converters['regex'] = converters.RegexConverter
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 # Set upload folder
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER') or 'uploads'
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+def clear_uploads():
+    shutil.rmtree(app.config['UPLOAD_FOLDER'], ignore_errors=True)
+    os.mkdir(app.config['UPLOAD_FOLDER'])
+
+clear_uploads()
+# Trigger job at 4 AM every day UTC+8
+scheduler.add_job(id='clear_uploads', func=clear_uploads, trigger='cron', hour=4, timezone='Asia/Taipei')
 
 # Redirect all requests to the React app's root
 # React handles all the routing
