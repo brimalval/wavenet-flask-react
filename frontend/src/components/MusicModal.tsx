@@ -1,6 +1,7 @@
 import { Close } from "@mui/icons-material";
 import {
   Box,
+  CircularProgress,
   IconButton,
   Modal,
   ModalProps,
@@ -48,6 +49,54 @@ const MusicModal: React.FC<Props> = (props) => {
     ...modalProps
   } = props;
 
+  const currentNoteRef = useRef<HTMLTableCellElement>(null);
+  // Using the ref, scroll to the current note
+  useEffect(() => {
+    if (currentNoteRef.current) {
+      currentNoteRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+      });
+    }
+  }, [currentNoteRef, eventIndex]);
+
+  const mainTheme = useTheme();
+  // Create MUI theme
+  const getTheme = () =>
+    createTheme({
+      components: {
+        MuiTableCell: {
+          styleOverrides: {
+            root: {
+              width: "60px",
+            },
+            head: {
+              borderRight: `1px solid ${mainTheme.palette.primary.main}`,
+              "&:last-child": {
+                borderRight: "none",
+              },
+            },
+            body: {
+              // Apply a right border except for the last child
+              borderRight: "1px solid #ccc",
+              "&:last-child": {
+                borderRight: "none",
+              },
+            },
+          },
+        },
+      },
+    });
+  const theme = getTheme();
+
+  if (!(player && player.getFilesize())) {
+    console.log("Playas");
+    return (
+      <Modal {...modalProps} className="flex justify-center items-center">
+        <CircularProgress />
+      </Modal>
+    );
+  }
   const events = getNoteEvents(player);
   const isBeingPlayed = (note: string, index: number) => {
     if (eventIndex < 1) {
@@ -84,46 +133,7 @@ const MusicModal: React.FC<Props> = (props) => {
     0.25: <SemiquaverIcon />,
   };
 
-  const currentNoteRef = useRef<HTMLTableCellElement>(null);
-  // Using the ref, scroll to the current note
-  useEffect(() => {
-    if (currentNoteRef.current) {
-      currentNoteRef.current.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-      });
-    }
-  }, [currentNoteRef, eventIndex]);
-
   const scaleCopy = [...song.scale].reverse();
-  const mainTheme = useTheme();
-  // Create MUI theme
-  const getTheme = () =>
-    createTheme({
-      components: {
-        MuiTableCell: {
-          styleOverrides: {
-            root: {
-              width: "60px",
-            },
-            head: {
-              borderRight: `1px solid ${mainTheme.palette.primary.main}`,
-              "&:last-child": {
-                borderRight: "none",
-              },
-            },
-            body: {
-              // Apply a right border except for the last child
-              borderRight: "1px solid #ccc",
-              "&:last-child": {
-                borderRight: "none",
-              },
-            },
-          },
-        },
-      },
-    });
-  const theme = getTheme();
   return (
     <ThemeProvider theme={theme}>
       <Modal {...modalProps} className="flex justify-center items-center">
