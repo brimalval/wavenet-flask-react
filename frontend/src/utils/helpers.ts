@@ -19,7 +19,10 @@ export const setupPlayer = async (
   // Set up the player
   var soundfontPlayer = await Soundfont.instrument(
     new AudioContext(),
-    instrument
+    instrument,
+    {
+      gain: 2
+    }
   );
   const midiPlayer = new MidiPlayer.Player(function (event: any) {
     if (event.name === "Note on" && event.velocity > 0) {
