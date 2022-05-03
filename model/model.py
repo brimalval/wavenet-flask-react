@@ -1,7 +1,7 @@
 from model.wavenet import WaveNet
 from tensorflow import keras
 import numpy as np
-from model.converter import Converter
+from model.converters.converter import Converter
 
 
 class Model:
@@ -35,19 +35,20 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length, key, is_varied, note_duration=None, file_name=None):
+    def predict(self, x_data, note_length, sequence_length, output_classes, key, is_varied, note_duration=None, file_name=None):
         output = []
         x_data = np.array(x_data).reshape(
-            1, sequence_length, 1).astype("float32") / 119
+            1, sequence_length, 1).astype("float32") / (output_classes-1)
         for i in range(note_length):
             y = self.model.predict(x_data).ravel()
             arg_y = self.filter_note_with_key(y, key)
             output.append(arg_y)
             x = x_data.ravel().tolist()
             x.pop(0)
-            x.append(arg_y / 119)
+            x.append(arg_y / (output_classes-1))
             x_data = np.array(x).reshape(
                 1, sequence_length, 1).astype("float32")
+
         # TODO: save created midi file
 
         self.converter.create_song_from_ints(

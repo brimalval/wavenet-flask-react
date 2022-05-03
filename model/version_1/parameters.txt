@@ -1,0 +1,6 @@
+res_channel=128
+skip_channel=256
+stack_size=2
+kernel_size=2
+layer_size=3
+output_classes=120
