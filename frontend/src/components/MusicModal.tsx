@@ -123,12 +123,27 @@ const MusicModal: React.FC<Props> = (props) => {
     return isSameIndex && (isSameNote || isEquivalentNote());
   };
 
-  const durationCharacterMap = {
-    4: <SemibreveIcon />,
-    2: <MinimIcon />,
-    1: <CrotchetIcon />,
-    0.5: <QuaverIcon />,
-    0.25: <SemiquaverIcon />,
+  const durationMap = {
+    4: {
+      name: "Whole note",
+      icon: <SemibreveIcon />,
+    },
+    2: {
+      name: "Half note",
+      icon: <MinimIcon />,
+    },
+    1: {
+      name: "Quarter note",
+      icon: <CrotchetIcon />,
+    },
+    0.5: {
+      name: "Eighth note",
+      icon: <QuaverIcon />,
+    },
+    0.25: {
+      name: "Sixteenth note",
+      icon: <SemiquaverIcon />,
+    },
   };
 
   const scaleCopy = [...song.scale].reverse();
@@ -160,7 +175,7 @@ const MusicModal: React.FC<Props> = (props) => {
                     >
                       <Typography fontSize={12} variant="subtitle2">
                         {note.name}
-                        {durationCharacterMap[note.duration]}
+                        {durationMap[note.duration].icon}
                       </Typography>
                     </TableCell>
                   ))}

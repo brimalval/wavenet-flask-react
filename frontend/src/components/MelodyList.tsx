@@ -20,6 +20,11 @@ import { toast } from "material-react-toastify";
 import MusicModal from "./MusicModal";
 import { useInjection } from "inversify-react";
 import { MusicPlayer } from "../services/MusicPlayer";
+import SemibreveIcon from "../assets/icons/SemibreveIcon";
+import MinimIcon from "../assets/icons/MinimIcon";
+import CrotchetIcon from "../assets/icons/CrotchetIcon";
+import QuaverIcon from "../assets/icons/QuaverIcon";
+import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
 
 type Props = {
   songs: Song[];
@@ -217,7 +222,28 @@ const MelodyList: React.FC<Props> = (props) => {
       </Button>
     );
   };
-
+  const durationMap = {
+    4: {
+      name: "Whole note",
+      icon: <SemibreveIcon />,
+    },
+    2: {
+      name: "Half note",
+      icon: <MinimIcon />,
+    },
+    1: {
+      name: "Quarter note",
+      icon: <CrotchetIcon />,
+    },
+    0.5: {
+      name: "Eighth note",
+      icon: <QuaverIcon />,
+    },
+    0.25: {
+      name: "Sixteenth note",
+      icon: <SemiquaverIcon />,
+    },
+  };
   return (
     <Paper>
       {currentSong && (
@@ -256,7 +282,23 @@ const MelodyList: React.FC<Props> = (props) => {
           {props.songs.map((song, index) => (
             <TableRow key={index}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{song.notes.map((note) => note.name + " ")}</TableCell>
+              <TableCell>
+                {song.notes.map((note) => (
+                  <Tooltip
+                    title={
+                      <>
+                        {durationMap[note.duration].name}
+                        {durationMap[note.duration].icon}
+                      </>
+                    }
+                    placement="top"
+                  >
+                    <Typography variant="body2" className="inline-block mr-1">
+                      {note.name}
+                    </Typography>
+                  </Tooltip>
+                ))}
+              </TableCell>
               <TableCell>
                 <Tooltip title="Assuming 120 BPM and x/4 time signature">
                   <Typography variant="body2">

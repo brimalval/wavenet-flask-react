@@ -276,7 +276,7 @@ function Dashboard() {
               </DashboardCard>
             </Grid>
 
-            <Grid item xs={12} className="text-center">
+            <Grid item xs={12} className="text-right">
               <LoadingButton
                 loading={isSubmitting}
                 loadingPosition="start"
