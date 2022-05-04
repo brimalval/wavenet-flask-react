@@ -16,9 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { createTheme, useTheme } from "@mui/material/styles";
-import { Player } from "midi-player-js";
 import { useEffect, useRef } from "react";
-import { getNoteEvents } from "../utils/helpers";
 import QuaverIcon from "../assets/icons/QuaverIcon";
 import SemibreveIcon from "../assets/icons/SemibreveIcon";
 import MinimIcon from "../assets/icons/MinimIcon";
@@ -26,10 +24,11 @@ import CrotchetIcon from "../assets/icons/CrotchetIcon";
 import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
 import Song from "../utils/types/Song";
 import MusicModalControls from "./MusicModalControls";
+import { MusicPlayer } from "../services/MusicPlayer";
 
 type Props = Omit<ModalProps, "children"> & {
   song: Song;
-  player: Player;
+  player: MusicPlayer;
   showTempoSlider: boolean;
   eventIndex: number;
   handleClose: () => void;
@@ -89,22 +88,21 @@ const MusicModal: React.FC<Props> = (props) => {
     });
   const theme = getTheme();
 
-  if (!(player && player.getFilesize())) {
-    console.log("Playas");
+  if (!(player && player.getSong())) {
     return (
       <Modal {...modalProps} className="flex justify-center items-center">
         <CircularProgress />
       </Modal>
     );
   }
-  const events = getNoteEvents(player);
+  const events = player.getNotes();
   const isBeingPlayed = (note: string, index: number) => {
     if (eventIndex < 1) {
       return false;
     }
     const isSameIndex = eventIndex - 1 === index;
     const currentEvent = events[eventIndex - 1];
-    const isSameNote = currentEvent.noteName === note;
+    const isSameNote = currentEvent.note === note;
     // Check for equivalence of note in terms of sharp/flat
     const sharpToFlatMap = {
       "C#": "Db",
@@ -114,11 +112,11 @@ const MusicModal: React.FC<Props> = (props) => {
       "A#": "Bb",
     };
     const isEquivalentNote = () => {
-      const currentEventNote = currentEvent.noteName;
+      const currentEventNote = currentEvent.note;
       const sameOctaves = currentEventNote?.at(-1) === note.at(-1);
       return (
         sharpToFlatMap[note.slice(0, 2) as keyof typeof sharpToFlatMap] ===
-          currentEvent.noteName?.slice(0, 2) && sameOctaves
+          currentEvent.note.slice(0, 2) && sameOctaves
       );
     };
 

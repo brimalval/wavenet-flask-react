@@ -15,10 +15,11 @@ import { getFile } from "../utils/api";
 import { downloadBlob, setupPlayer, loadBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
-import { Player } from "midi-player-js";
 import React, { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
 import MusicModal from "./MusicModal";
+import { useInjection } from "inversify-react";
+import { MusicPlayer } from "../services/MusicPlayer";
 
 type Props = {
   songs: Song[];
@@ -27,10 +28,9 @@ type Props = {
 
 const MelodyList: React.FC<Props> = (props) => {
   const [
-    { player, currentSong, cache, playing, paused, musicModalOpen, eventIndex },
+    { currentSong, cache, playing, paused, musicModalOpen, eventIndex },
     setState,
   ] = useState<{
-    player?: Player;
     currentSong?: Song;
     cache: { [path: string]: Blob };
     playing: boolean;
@@ -45,46 +45,55 @@ const MelodyList: React.FC<Props> = (props) => {
     eventIndex: 0,
   });
 
+  const player: MusicPlayer = useInjection(MusicPlayer);
+
   const { songs, instrument } = props;
 
   const clearCache = () => {
     setState((prevState) => ({ ...prevState, cache: {} }));
   };
 
-  const setPlayer = (player: Player) => {
-    setState((prevState) => {
-      if (prevState.player) {
-        prevState.player.stop();
+  useEffect(() => {
+    var mounted = true;
+    if (mounted) {
+      player.on("endOfFile", () => {
+        setState((prevState) => ({
+          ...prevState,
+          playing: false,
+          paused: false,
+          eventIndex: 0,
+        }));
+      });
+
+      player.setPlayCallback(() => {
+        setState((prevState) => {
+          return {
+            ...prevState,
+            eventIndex: prevState.eventIndex + 1,
+          };
+        });
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const setup = async () => {
+      if (currentSong) {
+        const blob = cache[currentSong.path];
+        await player.loadSong(blob);
       }
-      return { ...prevState, player };
-    });
-  };
+    };
+    setup();
+  }, [currentSong]);
 
   useEffect(() => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        const newPlayer = await setupPlayer(
-          instrument,
-          cache[currentSong?.path ?? ""],
-          () => {
-            setState((prevState) => {
-              return {
-                ...prevState,
-                eventIndex: prevState.eventIndex + 1,
-              };
-            });
-          }
-        );
-        newPlayer.on("endOfFile", () => {
-          setState((prevState) => ({
-            ...prevState,
-            playing: false,
-            paused: false,
-            eventIndex: 0,
-          }));
-        });
-        setPlayer(newPlayer);
+        player.setInstrument(instrument);
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
         return;
@@ -146,8 +155,12 @@ const MelodyList: React.FC<Props> = (props) => {
       }
     }
 
-    if (song.path === currentSong?.path && player.getFilesize()) {
-      player.play();
+    if (song.path === currentSong?.path && player.getSong()) {
+      try {
+        player.play();
+      } catch (e) {
+        toast.error("Error playing song. Please try again!");
+      }
       setState((prev) => ({
         ...prev,
         playing: true,
@@ -159,8 +172,13 @@ const MelodyList: React.FC<Props> = (props) => {
 
     const songBlob = await getSong(song.path);
     if (songBlob) {
-      await loadBlob(songBlob, player);
-      player.play();
+      await player.loadSong(songBlob);
+      try {
+        player.play();
+      } catch (e) {
+        toast.error("Error playing song. Please try again!");
+        return;
+      }
       setState((prevState) => ({
         ...prevState,
         currentSong: song,
@@ -188,7 +206,6 @@ const MelodyList: React.FC<Props> = (props) => {
       if (extraAction) {
         await extraAction();
       }
-      (window as any).player = player;
     };
     return song.path === currentSong?.path && playing ? (
       <Button variant="text" startIcon={<Pause />} onClick={handleClick}>
