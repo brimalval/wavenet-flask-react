@@ -1,7 +1,14 @@
 import "reflect-metadata";
 import { injectable } from "inversify";
-import { InstrumentName } from "soundfont-player";
 import { IMusicPlayer } from "./IMusicPlayer";
+import MidiPlayer, { Event } from "midi-player-js";
+import Soundfont, {
+  InstrumentName,
+  Player as InstrumentPlayer,
+} from "soundfont-player";
+
+// Declaring it here since GrimmDude didn't export it
+type PlayerEventType = "endOfFile" | "midiEvent" | "playing" | "fileLoaded";
 
 // Create a custom exception for when the user tries to play a song when the player is not ready
 class PlayerNotReadyException extends Error {
@@ -14,81 +21,206 @@ class PlayerNotReadyException extends Error {
 @injectable()
 export class MPJSMusicPlayer implements IMusicPlayer {
   private instrument: string;
+  private player: MidiPlayer.Player;
+  private looper: MidiPlayer.Player;
+  private playCallbacks: { [x: string]: Array<(...args: any[]) => void> } = {
+    midiEvent: [],
+    endOfFile: [],
+    playing: [],
+    fileLoaded: [],
+  };
+  private soundProps: {
+    soundFont: InstrumentPlayer | null;
+  } = {
+    soundFont: null,
+  };
+  private song: ArrayBuffer | null;
+  private audioContext: AudioContext;
+
+  constructor() {
+    const playEvent = (event: any) => {
+      if (event.name === "Note on") {
+        this.playCallbacks.midiEvent.forEach((cb) => cb(event));
+        if (this.soundProps.soundFont) {
+          this.soundProps.soundFont.play(event.noteName);
+        }
+      } else if (event.name === "Note off") {
+        if (this.soundProps.soundFont) this.soundProps.soundFont.stop();
+      }
+    };
+    this.audioContext = new AudioContext();
+    this.player = new MidiPlayer.Player(playEvent);
+    this.looper = new MidiPlayer.Player(playEvent);
+    this.looper.on("endOfFile", () => {
+      this.looper.skipToPercent(0);
+      this.looper.play();
+    });
+  }
 
   /**
-   * @throws {PlayerNotReadyException}
+   * @throws {Error}
    */
   play() {
-    console.log(`Playing ${this.instrument}`);
-    throw new PlayerNotReadyException();
+    if (!this.soundProps.soundFont || !this.player || !this.getSong()) {
+      throw new Error("Player is not yet ready!");
+    }
+    if (this.player.isPlaying() || this.looper.isPlaying()) {
+      throw new Error("Player is already playing!");
+    }
+    this.player.play();
   }
   loop() {
-    console.log(`Looping ${this.instrument}`);
+    if (!this.soundProps.soundFont || !this.looper || !this.getSong()) {
+      throw new PlayerNotReadyException();
+    }
+    if (this.player.isPlaying() || this.looper.isPlaying()) {
+      throw new Error("Player is already playing!");
+    }
+    console.log(`Playing ${this.instrument}`);
+    this.looper.play();
   }
   pause() {
+    if (this.player.isPlaying()) {
+      this.player.pause();
+    } else if (this.looper.isPlaying()) {
+      this.looper.pause();
+    }
     console.log(`Pausing ${this.instrument}`);
   }
   stop() {
+    if (this.player.isPlaying()) {
+      this.player.stop();
+    } else if (this.looper.isPlaying()) {
+      this.looper.stop();
+    }
     console.log(`Stopping ${this.instrument}`);
   }
-  setInstrument(instrument: InstrumentName): void {
-    this.instrument = instrument;
-    console.log(`Setting instrument to ${this.instrument}`);
+  async setInstrument(
+    instrument: InstrumentName,
+    options?: { [x: string]: any }
+  ): Promise<void> {
+    try {
+      this.soundProps.soundFont = await Soundfont.instrument(
+        this.audioContext,
+        instrument,
+        options
+      );
+      this.instrument = instrument;
+    } catch (e) {
+      throw new Error(`${instrument} is not a valid instrument!`);
+    }
   }
-  on(event: string, callback: () => void): void {
-    console.log(`Listening to ${event}`);
+  on(event: PlayerEventType, callback: () => void): void {
+    this.player.on(event, callback);
+    this.looper.on(event, callback);
   }
   async loadSong(song: string | Blob | ArrayBuffer) {
-    console.log(`Loading song ${song}`);
+    // Check if the song is an ArrayBuffer
+    if (typeof song === "string") {
+      // Todo: Request song from server
+    } else if (song instanceof Blob) {
+      const load = new Promise<ArrayBuffer>((resolve, reject) => {
+        // Create Base64 encoding of the blob
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(song as Blob);
+        reader.onloadend = function () {
+          const buffer = reader.result as ArrayBuffer;
+          resolve(buffer);
+        };
+        reader.onerror = function (error) {
+          reject(error);
+        };
+      });
+      song = await load;
+      this.song = song;
+      this.player.loadArrayBuffer(song);
+      console.log("finished loading buffer");
+    } else {
+      this.player.loadArrayBuffer(song as ArrayBuffer);
+    }
+    console.log("I've finished loading");
   }
-  setPlayCallback(callback: () => void): void {
-    console.log(`Setting play callback`);
+  setPlayCallback(callback: () => void, replace = true): void {
+    if (!replace) {
+      this.playCallbacks.midiEvent.push(callback);
+      return;
+    }
+    // Replace the old callback with the new one
+    this.playCallbacks.midiEvent.splice(0, 1, callback);
   }
   isPlaying(): boolean {
-    console.log("Not playing by default");
-    return false;
+    return this.looper.isPlaying() || this.player.isPlaying();
   }
   getSong(): string | Blob | ArrayBuffer | null {
-    console.log("Not playing by default");
-    return null;
+    return this.song;
   }
   getNotes() {
-    console.log("No notes yet");
-    return [] as { note: string; duration: number }[];
+    return this.getNoteEvents().map((event) => ({
+      // We are guaranteed that noteName is a string
+      note: event.noteName as string,
+    }));
   }
-  setTempo(tempo: number) {
-    console.log(`Setting tempo to ${tempo}`);
+  async setTempo(tempo: number) {
+    await (this.player as any).setTempo(tempo);
+    await (this.looper as any).setTempo(tempo);
   }
   getTempo() {
     // Return current tempo
-    return 120;
+    return this.player.tempo;
   }
   getCurrentTime(): number {
     // Return current time of currently loaded song
+    const playerTick = this.player.getCurrentTick();
+    const looperTick = this.looper.getCurrentTick();
+    if (this.player.isPlaying() || playerTick > looperTick) {
+      return this.player.getSongTime() - this.player.getSongTimeRemaining();
+    } else if (this.looper.isPlaying() || looperTick > playerTick) {
+      return this.looper.getSongTime() - this.looper.getSongTimeRemaining();
+    }
     return 0;
   }
   getDuration(): number {
     // Return duration of currently loaded song
-    return 0;
+    return this.player.getSongTime();
   }
   getInstrument(): string {
     return this.instrument;
   }
   getPercent(): number {
     // Return current position in song
-    return 0;
+    return 1 - this.player.getSongPercentRemaining();
   }
   getVolume(): number {
     // Return current volume
+    // TODO: Implement
     return 0;
   }
   off(event: string, callback: () => void): void {
-    console.log(`Stopped listening to ${event}`);
+    console.error(`Unimplemented - Stop listening to ${event}`);
   }
   setVolume(volume: number): void {
-    console.log(`Setting volume to ${volume}`);
+    console.error(`Unimplemeneted - Setting volume to ${volume}`);
   }
   skipToPercent(percent: number): void {
-    console.log(`Skipping to ${percent}`);
+    console.error(`Skipping to ${percent}`);
+  }
+
+  // Extra methods
+  getEvents() {
+    const events = this.player.getEvents();
+    // Grimmdude screwed up type definitions for .getEvents() so I made a hacky fix
+    const [setupEvents, noteEvents] = events as any as [Event[], Event[]];
+    const notePlayEvents = noteEvents.filter(
+      (event) => event.name === "Note on"
+    );
+    return [setupEvents, notePlayEvents];
+  }
+
+  getNoteEvents() {
+    return this.getEvents()[1];
+  }
+
+  getSetupEvents() {
+    return this.getEvents()[0];
   }
 }

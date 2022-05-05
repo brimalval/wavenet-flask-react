@@ -2,7 +2,7 @@ export interface IMusicPlayer {
   getCurrentTime(): number;
   getDuration(): number;
   getInstrument(): string;
-  getNotes(): { note: string; duration: number }[];
+  getNotes(): { note: string }[];
   getPercent(): number;
   getSong(): string | Blob | ArrayBuffer | null;
   getTempo(): number;
@@ -14,7 +14,10 @@ export interface IMusicPlayer {
   on(event: string, callback: () => void): void;
   pause(): void;
   play(): void;
-  setInstrument(instrument: string): void;
+  setInstrument(
+    instrument: string,
+    options?: { [x: string]: any }
+  ): Promise<void>;
   setPlayCallback(callback: () => void): void;
   setTempo(tempo: number): void;
   setVolume(volume: number): void;

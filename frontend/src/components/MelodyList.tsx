@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { getFile } from "../utils/api";
-import { downloadBlob, setupPlayer, loadBlob } from "../utils/helpers";
+import { downloadBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
 import React, { useEffect, useState } from "react";
@@ -99,7 +99,7 @@ const MelodyList: React.FC<Props> = (props) => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        player.setInstrument(instrument);
+        await player.setInstrument(instrument);
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
         return;
