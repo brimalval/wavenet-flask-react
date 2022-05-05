@@ -95,7 +95,7 @@ function Dashboard() {
     isSubmitting,
   } = useFormik({
     initialValues: {
-      variedRhythm: true,
+      variedRhythm: false,
       melodyCount: 1,
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
