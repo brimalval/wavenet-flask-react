@@ -281,11 +281,19 @@ const MelodyList: React.FC<Props> = (props) => {
         </TableHead>
         <TableBody>
           {props.songs.map((song, index) => (
-            <TableRow key={index}>
+            <TableRow
+              key={index}
+              className={
+                song.path === currentSong?.path && musicModalOpen
+                  ? "bg-green-300"
+                  : ""
+              }
+            >
               <TableCell>{index + 1}</TableCell>
               <TableCell>
-                {song.notes.map((note) => (
+                {song.notes.map((note, index) => (
                   <Tooltip
+                    key={`note${index}_${index}`}
                     title={
                       <>
                         {durationMap[note.duration].name}

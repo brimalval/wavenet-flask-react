@@ -10,6 +10,7 @@ type Song = {
 	path: string;
 	scale: string[];
 	duration: number;
+	title: string;
 }
 
 export default Song;

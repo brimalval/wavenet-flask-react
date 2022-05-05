@@ -151,7 +151,8 @@ const MusicModal: React.FC<Props> = (props) => {
     <ThemeProvider theme={theme}>
       <Modal {...modalProps} className="flex justify-center items-center">
         <Paper className="sm:w-auto sm:max-w-[80vw] sm:h-auto xs:w-full xs:max-w-[100vw] xs:h-screen justify-between flex flex-col">
-          <Box className="flex justify-end p-2 border-b-2 border-b-slate-500">
+          <Box className="flex justify-between p-2 border-b-2 border-b-slate-500">
+            <Typography variant="h6">{song.title}</Typography>
             <IconButton onClick={handleClose}>
               <Close />
             </IconButton>
