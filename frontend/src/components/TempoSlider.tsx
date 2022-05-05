@@ -1,8 +1,8 @@
 import { Box, Typography, Input, Slider } from "@mui/material";
-import { MusicPlayer } from "../services/MusicPlayer";
+import { IMusicPlayer } from "../services/IMusicPlayer";
 
 type Props = {
-  player: MusicPlayer;
+  player: IMusicPlayer;
   value: number;
   setValue: (value: number) => void;
 };

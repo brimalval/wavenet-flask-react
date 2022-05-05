@@ -24,11 +24,11 @@ import CrotchetIcon from "../assets/icons/CrotchetIcon";
 import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
 import Song from "../utils/types/Song";
 import MusicModalControls from "./MusicModalControls";
-import { MusicPlayer } from "../services/MusicPlayer";
+import { IMusicPlayer } from "../services/IMusicPlayer";
 
 type Props = Omit<ModalProps, "children"> & {
   song: Song;
-  player: MusicPlayer;
+  player: IMusicPlayer;
   showTempoSlider: boolean;
   eventIndex: number;
   handleClose: () => void;

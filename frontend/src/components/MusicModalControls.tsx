@@ -1,11 +1,11 @@
 import { Stop } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { MusicPlayer } from "../services/MusicPlayer";
+import { IMusicPlayer } from "../services/IMusicPlayer";
 import TempoSlider from "./TempoSlider";
 
 type Props = {
-  player: MusicPlayer;
+  player: IMusicPlayer;
   controlButtonGetter: (extraAction?: () => any) => JSX.Element;
   showTempoSlider: boolean;
   handleStop: () => void;

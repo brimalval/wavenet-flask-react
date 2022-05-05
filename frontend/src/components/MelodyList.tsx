@@ -19,12 +19,13 @@ import React, { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
 import MusicModal from "./MusicModal";
 import { useInjection } from "inversify-react";
-import { MusicPlayer } from "../services/MusicPlayer";
 import SemibreveIcon from "../assets/icons/SemibreveIcon";
 import MinimIcon from "../assets/icons/MinimIcon";
 import CrotchetIcon from "../assets/icons/CrotchetIcon";
 import QuaverIcon from "../assets/icons/QuaverIcon";
 import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
+import { IMusicPlayer } from "../services/IMusicPlayer";
+import { TYPES } from "../inversify.config";
 
 type Props = {
   songs: Song[];
@@ -50,7 +51,7 @@ const MelodyList: React.FC<Props> = (props) => {
     eventIndex: 0,
   });
 
-  const player: MusicPlayer = useInjection(MusicPlayer);
+  const player: IMusicPlayer = useInjection(TYPES.IMusicPlayer);
 
   const { songs, instrument } = props;
 

@@ -1,7 +1,11 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { MusicPlayer } from "./services/MusicPlayer";
+import { MPJSMusicPlayer } from "./services/MPJSMusicPlayer";
+
+const TYPES = {
+	IMusicPlayer: Symbol.for("IMusicPlayer"),
+}
 
 const container = new Container();
-container.bind(MusicPlayer).toSelf();
-export { container };
+container.bind(TYPES.IMusicPlayer).to(MPJSMusicPlayer);
+export { container, TYPES };
