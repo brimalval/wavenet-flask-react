@@ -17,7 +17,6 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
 
   constructor() {
     Tone.Transport.loop = true;
-    (window as any).Transport = Tone.Transport;
     this.parsedMidi = null;
   }
 

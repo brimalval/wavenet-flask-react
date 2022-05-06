@@ -34,19 +34,17 @@ type Props = {
 
 const MelodyList: React.FC<Props> = (props) => {
   const [
-    { currentSong, cache, playing, paused, musicModalOpen, eventIndex },
+    { currentSong, cache, playing,  musicModalOpen, eventIndex },
     setState,
   ] = useState<{
     currentSong?: Song;
     cache: { [path: string]: Blob };
     playing: boolean;
-    paused: boolean;
     musicModalOpen: boolean;
     eventIndex: number;
   }>({
     cache: {},
     playing: false,
-    paused: false,
     musicModalOpen: false,
     eventIndex: 0,
   });
@@ -66,7 +64,6 @@ const MelodyList: React.FC<Props> = (props) => {
         setState((prevState) => ({
           ...prevState,
           playing: false,
-          paused: false,
           eventIndex: 0,
         }));
       });
@@ -89,7 +86,9 @@ const MelodyList: React.FC<Props> = (props) => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        await player.setInstrument(instrument);
+        await player.setInstrument(instrument, {
+          gain: 3,
+        });
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
         return;
@@ -103,6 +102,12 @@ const MelodyList: React.FC<Props> = (props) => {
   useEffect(() => {
     clearCache();
   }, [songs]);
+
+  useEffect(() => {
+    return () => {
+      player.stop();
+    };
+  }, []);
 
   if (!player) {
     return (
@@ -246,7 +251,6 @@ const MelodyList: React.FC<Props> = (props) => {
             setState((prev) => ({
               ...prev,
               playing: false,
-              paused: false,
               musicModalOpen: false,
               eventIndex: 0,
             }));
@@ -270,11 +274,7 @@ const MelodyList: React.FC<Props> = (props) => {
           {props.songs.map((song, index) => (
             <TableRow
               key={index}
-              className={
-                song.path === currentSong?.path && musicModalOpen
-                  ? "bg-green-300"
-                  : ""
-              }
+              className={song.path in cache ? "bg-neutral-100" : ""}
             >
               <TableCell>{index + 1}</TableCell>
               <TableCell>
