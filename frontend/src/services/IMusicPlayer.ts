@@ -18,7 +18,8 @@ export interface IMusicPlayer {
     instrument: string,
     options?: { [x: string]: any }
   ): Promise<void>;
-  setPlayCallback(callback: () => void): void;
+  setPlayCallback(callback: (index: number) => void): void;
+  setStopCallback(callback: () => void): void;
   setTempo(tempo: number): void;
   setVolume(volume: number): void;
   skipToPercent(percent: number): void;

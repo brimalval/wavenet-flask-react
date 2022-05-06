@@ -62,7 +62,7 @@ const MelodyList: React.FC<Props> = (props) => {
   useEffect(() => {
     var mounted = true;
     if (mounted) {
-      player.on("endOfFile", () => {
+      player.setStopCallback(() => {
         setState((prevState) => ({
           ...prevState,
           playing: false,
@@ -71,11 +71,11 @@ const MelodyList: React.FC<Props> = (props) => {
         }));
       });
 
-      player.setPlayCallback(() => {
+      player.setPlayCallback((index: number) => {
         setState((prevState) => {
           return {
             ...prevState,
-            eventIndex: prevState.eventIndex + 1,
+            eventIndex: index,
           };
         });
       });

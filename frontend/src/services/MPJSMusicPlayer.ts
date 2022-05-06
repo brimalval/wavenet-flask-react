@@ -140,13 +140,17 @@ export class MPJSMusicPlayer implements IMusicPlayer {
     }
     console.log("I've finished loading");
   }
-  setPlayCallback(callback: () => void, replace = true): void {
+  setPlayCallback(callback: (index: number) => void, replace = true): void {
     if (!replace) {
       this.playCallbacks.midiEvent.push(callback);
       return;
     }
     // Replace the old callback with the new one
     this.playCallbacks.midiEvent.splice(0, 1, callback);
+  }
+  setStopCallback(callback: () => void): void {
+    this.player.on("endOfFile", callback);
+    this.looper.on("endOfFile", callback);
   }
   isPlaying(): boolean {
     return this.looper.isPlaying() || this.player.isPlaying();
