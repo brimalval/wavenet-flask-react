@@ -163,16 +163,16 @@ const MelodyList: React.FC<Props> = (props) => {
 
     if (song.path === currentSong?.path && player.getSong()) {
       try {
-        player.play();
+        await player.play();
+        setState((prev) => ({
+          ...prev,
+          playing: true,
+          paused: false,
+          musicModalOpen: true,
+        }));
       } catch (e) {
         toast.error("Error playing song. Please try again!");
       }
-      setState((prev) => ({
-        ...prev,
-        playing: true,
-        paused: false,
-        musicModalOpen: true,
-      }));
       return;
     }
 
@@ -180,19 +180,19 @@ const MelodyList: React.FC<Props> = (props) => {
     if (songBlob) {
       await player.loadSong(songBlob);
       try {
-        player.play();
+        await player.play();
+        setState((prevState) => ({
+          ...prevState,
+          currentSong: song,
+          eventIndex: 0,
+          playing: true,
+          paused: false,
+          musicModalOpen: true,
+        }));
       } catch (e) {
         toast.error("Error playing song. Please try again!");
         return;
       }
-      setState((prevState) => ({
-        ...prevState,
-        currentSong: song,
-        eventIndex: 0,
-        playing: true,
-        paused: false,
-        musicModalOpen: true,
-      }));
     }
   };
 

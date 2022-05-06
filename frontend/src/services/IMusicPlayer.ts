@@ -13,7 +13,7 @@ export interface IMusicPlayer {
   off(event: string, callback: () => void): void;
   on(event: string, callback: () => void): void;
   pause(): void;
-  play(): void;
+  play(): Promise<void>;
   setInstrument(
     instrument: string,
     options?: { [x: string]: any }

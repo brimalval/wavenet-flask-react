@@ -60,14 +60,14 @@ export class MPJSMusicPlayer implements IMusicPlayer {
   /**
    * @throws {Error}
    */
-  play() {
+  async play() {
     if (!this.soundProps.soundFont || !this.player || !this.getSong()) {
       throw new Error("Player is not yet ready!");
     }
     if (this.player.isPlaying() || this.looper.isPlaying()) {
       throw new Error("Player is already playing!");
     }
-    this.player.play();
+    await this.player.play();
   }
   loop() {
     if (!this.soundProps.soundFont || !this.looper || !this.getSong()) {
