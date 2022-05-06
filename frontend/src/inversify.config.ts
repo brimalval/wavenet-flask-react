@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { MPJSMusicPlayer } from "./services/MPJSMusicPlayer";
 import { ToneJSMusicPlayer } from "./services/ToneJSMusicPlayer";
 
 const TYPES = {

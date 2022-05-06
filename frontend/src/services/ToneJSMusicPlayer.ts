@@ -2,7 +2,6 @@ import { injectable } from "inversify";
 import { IMusicPlayer } from "./IMusicPlayer";
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-import { getFile } from "../utils/api";
 import Soundfont, {
   InstrumentName,
   Player as InstrumentPlayer,
