@@ -39,10 +39,13 @@ const MusicModalControls: React.FC<Props> = (props) => {
         {controlButtonGetter(async () => {
           await handleChange(tempo);
         })}
-        <Button onClick={() => {
-          handleStop();
-          setTempo(120);
-        }} startIcon={<Stop />}>
+        <Button
+          onClick={() => {
+            handleStop();
+            setTempo(120);
+          }}
+          startIcon={<Stop />}
+        >
           Stop
         </Button>
       </Box>

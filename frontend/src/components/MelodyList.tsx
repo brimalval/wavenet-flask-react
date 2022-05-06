@@ -145,7 +145,7 @@ const MelodyList: React.FC<Props> = (props) => {
   const handlePlay = async (song: Song) => {
     if (player.isPlaying()) {
       player.pause();
-      setState((prev) => ({ ...prev, playing: false, paused: true }));
+      setState((prev) => ({ ...prev, playing: false }));
       if (song.path === currentSong?.path) {
         return;
       }
@@ -157,7 +157,6 @@ const MelodyList: React.FC<Props> = (props) => {
         setState((prev) => ({
           ...prev,
           playing: true,
-          paused: false,
           musicModalOpen: true,
         }));
       } catch (e) {
@@ -176,7 +175,6 @@ const MelodyList: React.FC<Props> = (props) => {
           currentSong: song,
           eventIndex: 0,
           playing: true,
-          paused: false,
           musicModalOpen: true,
         }));
       } catch (e) {
@@ -191,7 +189,6 @@ const MelodyList: React.FC<Props> = (props) => {
     setState((prev) => ({
       ...prev,
       playing: false,
-      paused: false,
       eventIndex: 0,
     }));
   };
@@ -242,7 +239,7 @@ const MelodyList: React.FC<Props> = (props) => {
           open={musicModalOpen}
           eventIndex={eventIndex}
           song={currentSong}
-          showTempoSlider={paused}
+          showTempoSlider={true}
           player={player}
           handleClose={() => {
             player.stop();
