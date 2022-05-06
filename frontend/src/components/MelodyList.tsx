@@ -87,16 +87,6 @@ const MelodyList: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const setup = async () => {
-      if (currentSong) {
-        const blob = cache[currentSong.path];
-        await player.loadSong(blob);
-      }
-    };
-    setup();
-  }, [currentSong]);
-
-  useEffect(() => {
-    const setup = async () => {
       toast.info("Loading instrument...");
       try {
         await player.setInstrument(instrument);
