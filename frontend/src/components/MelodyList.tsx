@@ -12,13 +12,20 @@ import {
   Typography,
 } from "@mui/material";
 import { getFile } from "../utils/api";
-import { downloadBlob, setupPlayer, loadBlob } from "../utils/helpers";
+import { downloadBlob } from "../utils/helpers";
 import Song from "../utils/types/Song";
 import { InstrumentName } from "soundfont-player";
-import { Player } from "midi-player-js";
 import React, { useEffect, useState } from "react";
 import { toast } from "material-react-toastify";
 import MusicModal from "./MusicModal";
+import { useInjection } from "inversify-react";
+import SemibreveIcon from "../assets/icons/SemibreveIcon";
+import MinimIcon from "../assets/icons/MinimIcon";
+import CrotchetIcon from "../assets/icons/CrotchetIcon";
+import QuaverIcon from "../assets/icons/QuaverIcon";
+import SemiquaverIcon from "../assets/icons/SemiquaverIcon";
+import { IMusicPlayer } from "../services/IMusicPlayer";
+import { TYPES } from "../inversify.config";
 
 type Props = {
   songs: Song[];
@@ -27,10 +34,9 @@ type Props = {
 
 const MelodyList: React.FC<Props> = (props) => {
   const [
-    { player, currentSong, cache, playing, paused, musicModalOpen, eventIndex },
+    { currentSong, cache, playing, paused, musicModalOpen, eventIndex },
     setState,
   ] = useState<{
-    player?: Player;
     currentSong?: Song;
     cache: { [path: string]: Blob };
     playing: boolean;
@@ -45,46 +51,45 @@ const MelodyList: React.FC<Props> = (props) => {
     eventIndex: 0,
   });
 
+  const player: IMusicPlayer = useInjection(TYPES.IMusicPlayer);
+
   const { songs, instrument } = props;
 
   const clearCache = () => {
     setState((prevState) => ({ ...prevState, cache: {} }));
   };
 
-  const setPlayer = (player: Player) => {
-    setState((prevState) => {
-      if (prevState.player) {
-        prevState.player.stop();
-      }
-      return { ...prevState, player };
-    });
-  };
+  useEffect(() => {
+    var mounted = true;
+    if (mounted) {
+      player.setStopCallback(() => {
+        setState((prevState) => ({
+          ...prevState,
+          playing: false,
+          paused: false,
+          eventIndex: 0,
+        }));
+      });
+
+      player.setPlayCallback((index: number) => {
+        setState((prevState) => {
+          return {
+            ...prevState,
+            eventIndex: index,
+          };
+        });
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        const newPlayer = await setupPlayer(
-          instrument,
-          cache[currentSong?.path ?? ""],
-          () => {
-            setState((prevState) => {
-              return {
-                ...prevState,
-                eventIndex: prevState.eventIndex + 1,
-              };
-            });
-          }
-        );
-        newPlayer.on("endOfFile", () => {
-          setState((prevState) => ({
-            ...prevState,
-            playing: false,
-            paused: false,
-            eventIndex: 0,
-          }));
-        });
-        setPlayer(newPlayer);
+        await player.setInstrument(instrument);
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
         return;
@@ -140,35 +145,42 @@ const MelodyList: React.FC<Props> = (props) => {
   const handlePlay = async (song: Song) => {
     if (player.isPlaying()) {
       player.pause();
-      setState((prev) => ({ ...prev, playing: false, paused: true }));
+      setState((prev) => ({ ...prev, playing: false }));
       if (song.path === currentSong?.path) {
         return;
       }
     }
 
-    if (song.path === currentSong?.path && player.getFilesize()) {
-      player.play();
-      setState((prev) => ({
-        ...prev,
-        playing: true,
-        paused: false,
-        musicModalOpen: true,
-      }));
+    if (song.path === currentSong?.path && player.getSong()) {
+      try {
+        await player.play();
+        setState((prev) => ({
+          ...prev,
+          playing: true,
+          musicModalOpen: true,
+        }));
+      } catch (e) {
+        toast.error("Error playing song. Please try again!");
+      }
       return;
     }
 
     const songBlob = await getSong(song.path);
     if (songBlob) {
-      await loadBlob(songBlob, player);
-      player.play();
-      setState((prevState) => ({
-        ...prevState,
-        currentSong: song,
-        eventIndex: 0,
-        playing: true,
-        paused: false,
-        musicModalOpen: true,
-      }));
+      await player.loadSong(songBlob);
+      try {
+        await player.play();
+        setState((prevState) => ({
+          ...prevState,
+          currentSong: song,
+          eventIndex: 0,
+          playing: true,
+          musicModalOpen: true,
+        }));
+      } catch (e) {
+        toast.error("Error playing song. Please try again!");
+        return;
+      }
     }
   };
 
@@ -177,7 +189,6 @@ const MelodyList: React.FC<Props> = (props) => {
     setState((prev) => ({
       ...prev,
       playing: false,
-      paused: false,
       eventIndex: 0,
     }));
   };
@@ -188,7 +199,6 @@ const MelodyList: React.FC<Props> = (props) => {
       if (extraAction) {
         await extraAction();
       }
-      (window as any).player = player;
     };
     return song.path === currentSong?.path && playing ? (
       <Button variant="text" startIcon={<Pause />} onClick={handleClick}>
@@ -200,7 +210,28 @@ const MelodyList: React.FC<Props> = (props) => {
       </Button>
     );
   };
-
+  const durationMap = {
+    4: {
+      name: "Whole note",
+      icon: <SemibreveIcon />,
+    },
+    2: {
+      name: "Half note",
+      icon: <MinimIcon />,
+    },
+    1: {
+      name: "Quarter note",
+      icon: <CrotchetIcon />,
+    },
+    0.5: {
+      name: "Eighth note",
+      icon: <QuaverIcon />,
+    },
+    0.25: {
+      name: "Sixteenth note",
+      icon: <SemiquaverIcon />,
+    },
+  };
   return (
     <Paper>
       {currentSong && (
@@ -208,7 +239,7 @@ const MelodyList: React.FC<Props> = (props) => {
           open={musicModalOpen}
           eventIndex={eventIndex}
           song={currentSong}
-          showTempoSlider={paused}
+          showTempoSlider={true}
           player={player}
           handleClose={() => {
             player.stop();
@@ -237,9 +268,33 @@ const MelodyList: React.FC<Props> = (props) => {
         </TableHead>
         <TableBody>
           {props.songs.map((song, index) => (
-            <TableRow key={index}>
+            <TableRow
+              key={index}
+              className={
+                song.path === currentSong?.path && musicModalOpen
+                  ? "bg-green-300"
+                  : ""
+              }
+            >
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{song.notes.map((note) => note.name + " ")}</TableCell>
+              <TableCell>
+                {song.notes.map((note, index) => (
+                  <Tooltip
+                    key={`note${index}_${index}`}
+                    title={
+                      <>
+                        {durationMap[note.duration].name}
+                        {durationMap[note.duration].icon}
+                      </>
+                    }
+                    placement="top"
+                  >
+                    <Typography variant="body2" className="inline-block mr-1">
+                      {note.name}
+                    </Typography>
+                  </Tooltip>
+                ))}
+              </TableCell>
               <TableCell>
                 <Tooltip title="Assuming 120 BPM and x/4 time signature">
                   <Typography variant="body2">

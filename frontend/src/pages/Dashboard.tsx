@@ -95,7 +95,7 @@ function Dashboard() {
     isSubmitting,
   } = useFormik({
     initialValues: {
-      variedRhythm: true,
+      variedRhythm: false,
       melodyCount: 1,
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
@@ -276,7 +276,7 @@ function Dashboard() {
               </DashboardCard>
             </Grid>
 
-            <Grid item xs={12} className="text-center">
+            <Grid item xs={12} className="text-right">
               <LoadingButton
                 loading={isSubmitting}
                 loadingPosition="start"

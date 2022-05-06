@@ -7,6 +7,8 @@ import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+import { Provider as DIProvider } from "inversify-react";
+import { container } from "./inversify.config";
 
 function App() {
   const theme = createTheme({
@@ -23,21 +25,23 @@ function App() {
     }),
   });
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomeLayout />}>
-            <Route index element={<Home />} />
-          </Route>
-          <Route path="/dashboard" element={<MainLayout />}>
-            <Route index element={<Dashboard />} />
-          </Route>
-          <Route path="*" element={<HomeLayout />}>
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <DIProvider container={container}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomeLayout />}>
+              <Route index element={<Home />} />
+            </Route>
+            <Route path="/dashboard" element={<MainLayout />}>
+              <Route index element={<Dashboard />} />
+            </Route>
+            <Route path="*" element={<HomeLayout />}>
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </DIProvider>
   );
 }
 

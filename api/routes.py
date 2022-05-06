@@ -56,7 +56,8 @@ def predict():
             ],
             "path": upload_path + ".mid",
             "scale": converter.get_scale(key=key, notes_as_ints=False),
-            "duration": duration
+            "duration": duration,
+            "title": f"{data['key']} Melody #{i+1}"
         })
     return jsonify(results)
 

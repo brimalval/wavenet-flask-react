@@ -1,8 +1,8 @@
 import { Box, Typography, Input, Slider } from "@mui/material";
-import { Player } from "midi-player-js";
+import { IMusicPlayer } from "../services/IMusicPlayer";
 
 type Props = {
-  player: Player;
+  player: IMusicPlayer;
   value: number;
   setValue: (value: number) => void;
 };
@@ -11,7 +11,7 @@ const TempoSlider: React.FC<Props> = (props) => {
   const { player, value, setValue } = props;
   type TextElement = HTMLTextAreaElement | HTMLInputElement;
   const handleChange: React.ChangeEventHandler<TextElement> = (event) => {
-    (player as any).setTempo(event.target.value);
+    player.setTempo(Number(event.target.value));
     setValue(Number(event.target.value));
   };
   type SliderChangeEvent = (

@@ -1,11 +1,11 @@
 import { Stop } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
-import { Player } from "midi-player-js";
 import { useEffect, useState } from "react";
+import { IMusicPlayer } from "../services/IMusicPlayer";
 import TempoSlider from "./TempoSlider";
 
 type Props = {
-  player: Player;
+  player: IMusicPlayer;
   controlButtonGetter: (extraAction?: () => any) => JSX.Element;
   showTempoSlider: boolean;
   handleStop: () => void;
@@ -39,10 +39,13 @@ const MusicModalControls: React.FC<Props> = (props) => {
         {controlButtonGetter(async () => {
           await handleChange(tempo);
         })}
-        <Button onClick={() => {
-          handleStop();
-          setTempo(120);
-        }} startIcon={<Stop />}>
+        <Button
+          onClick={() => {
+            handleStop();
+            setTempo(120);
+          }}
+          startIcon={<Stop />}
+        >
           Stop
         </Button>
       </Box>
