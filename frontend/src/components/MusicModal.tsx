@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { createTheme, useTheme } from "@mui/material/styles";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import QuaverIcon from "../assets/icons/QuaverIcon";
 import SemibreveIcon from "../assets/icons/SemibreveIcon";
 import MinimIcon from "../assets/icons/MinimIcon";
@@ -29,32 +29,32 @@ import { IMusicPlayer } from "../services/IMusicPlayer";
 type Props = Omit<ModalProps, "children"> & {
   song: Song;
   player: IMusicPlayer;
-  showTempoSlider: boolean;
-  eventIndex: number;
   handleClose: () => void;
-  controlButtonGetter: (extraAction?: () => any) => JSX.Element;
-  handleStop: () => void;
 };
 
 const MusicModal: React.FC<Props> = (props) => {
-  const {
-    song,
-    player,
-    eventIndex,
-    controlButtonGetter,
-    showTempoSlider,
-    handleClose,
-    handleStop,
-    ...modalProps
-  } = props;
+  const { song, player, handleClose, ...modalProps } = props;
 
+  const [eventIndex, setEventIndex] = useState(0);
   const currentNoteRef = useRef<HTMLTableCellElement>(null);
+
+  useEffect(() => {
+    player.setPlayCallback((eventIndex) => {
+      setEventIndex(eventIndex);
+    });
+
+    player.setStopCallback(() => {
+      setEventIndex(0);
+    });
+  }, []);
+
   // Using the ref, scroll to the current note
   useEffect(() => {
     if (currentNoteRef.current) {
       currentNoteRef.current.scrollIntoView({
         behavior: "smooth",
         inline: "center",
+        block: "center",
       });
     }
   }, [currentNoteRef, eventIndex]);
@@ -219,12 +219,7 @@ const MusicModal: React.FC<Props> = (props) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <MusicModalControls
-            player={player}
-            controlButtonGetter={controlButtonGetter}
-            showTempoSlider={showTempoSlider}
-            handleStop={handleStop}
-          />
+          <MusicModalControls player={player} />
         </Paper>
       </Modal>
     </ThemeProvider>

@@ -3,15 +3,13 @@ import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IMusicPlayer } from "../services/IMusicPlayer";
 import TempoSlider from "./TempoSlider";
+import PlayPauseButton from "./PlayPauseButton";
 
 type Props = {
   player: IMusicPlayer;
-  controlButtonGetter: (extraAction?: () => any) => JSX.Element;
-  showTempoSlider: boolean;
-  handleStop: () => void;
 };
 const MusicModalControls: React.FC<Props> = (props) => {
-  const { player, controlButtonGetter, handleStop, showTempoSlider } = props;
+  const { player } = props;
   const [tempo, setTempo] = useState(120);
   const handleChange = async (value: number) => {
     setTempo(value);
@@ -30,22 +28,32 @@ const MusicModalControls: React.FC<Props> = (props) => {
     };
   }, [player]);
 
+  const handlePlay = async () => {
+    if (player.isPlaying()) {
+      player.pause();
+    } else {
+      await player.play();
+    }
+  };
+
+  const handleStop = async () => {
+    await player.stop();
+    setTempo(120);
+  };
+
+  const handleIsPlaying = () => {
+    return player.isPlaying();
+  };
+
   return (
     <div>
-      {showTempoSlider && (
-        <TempoSlider value={tempo} setValue={handleChange} player={player} />
-      )}
+      <TempoSlider value={tempo} setValue={handleChange} player={player} />
       <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
-        {controlButtonGetter(async () => {
-          await handleChange(tempo);
-        })}
-        <Button
-          onClick={() => {
-            handleStop();
-            setTempo(120);
-          }}
-          startIcon={<Stop />}
-        >
+        <PlayPauseButton
+          handleIsPlaying={handleIsPlaying}
+          onClick={handlePlay}
+        />
+        <Button onClick={handleStop} startIcon={<Stop />}>
           Stop
         </Button>
       </Box>
