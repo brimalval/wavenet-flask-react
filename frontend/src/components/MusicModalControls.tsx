@@ -12,6 +12,7 @@ type Props = {
 const MusicModalControls: React.FC<Props> = (props) => {
   const { player } = props;
   const [tempo, setTempo] = useState(120);
+  const [isPlaying, setIsPlaying] = useState(true);
   const handleChange = async (value: number) => {
     setTempo(value);
     await (player as any).setTempo(value);
@@ -32,20 +33,18 @@ const MusicModalControls: React.FC<Props> = (props) => {
   const handlePlay = async () => {
     if (player.isPlaying()) {
       player.pause();
+      setIsPlaying(false);
     } else {
       await player.play();
+      setIsPlaying(true);
     }
   };
 
   const handleStop = async () => {
     await player.stop();
     setTempo(120);
+    setIsPlaying(false);
   };
-
-  const handleIsPlaying = () => {
-    return player.isPlaying();
-  };
-
   return (
     <div>
       <Grid container>
@@ -58,7 +57,7 @@ const MusicModalControls: React.FC<Props> = (props) => {
       </Grid>
       <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
         <PlayPauseButton
-          handleIsPlaying={handleIsPlaying}
+          isPlaying={isPlaying}
           onClick={handlePlay}
         />
         <Button onClick={handleStop} startIcon={<Stop />}>

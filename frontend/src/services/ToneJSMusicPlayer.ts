@@ -38,10 +38,8 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
         const startTime = midi.header.ticksToSeconds(note.ticks);
         Tone.Transport.schedule((time) => {
           this.soundFont!.play(note.name, 0, {
-            gain: this.volume,
-          }).stop(
-            time + midi.header.ticksToSeconds(note.durationTicks)
-          );
+            gain: this.volume, // Default value is 1
+          }).stop(time + midi.header.ticksToSeconds(note.durationTicks));
           if (this.notePlayCallback) {
             this.notePlayCallback(index + 1);
           }
@@ -74,10 +72,10 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
     return this.song;
   }
   getTempo(): number {
-    return 0;
+    return Tone.Transport.bpm.value;
   }
   getVolume(): number {
-    return 0;
+    return this.volume;
   }
   isPlaying(): boolean {
     return Tone.Transport.state === "started";

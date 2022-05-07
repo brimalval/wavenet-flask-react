@@ -8,8 +8,9 @@ type Props = {
 };
 
 const VolumeSlider: React.FC<Props> = (props) => {
+  const MAX_VOLUME = 8;
   const { player } = props;
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState((player.getVolume() / MAX_VOLUME) * 100);
   type SliderChangeEvent = (
     event: Event,
     value: number | number[],
@@ -17,7 +18,7 @@ const VolumeSlider: React.FC<Props> = (props) => {
   ) => void;
   const handleSliderChange: SliderChangeEvent = (event, value) => {
     console.log(player.getInstrument(), value);
-    player.setVolume((Number(value) / 100) * 8);
+    player.setVolume((Number(value) / 100) * MAX_VOLUME);
     setVolume(value as number);
   };
   return (

@@ -1,24 +1,17 @@
 import { Button, ButtonProps } from "@mui/material";
 import { Pause, PlayArrow } from "@mui/icons-material";
-import { useState } from "react";
 
 type Props = ButtonProps & {
-  handleIsPlaying: () => boolean;
+  isPlaying: boolean;
 };
 
 const PlayPauseButton: React.FC<Props> = (props) => {
-  const { handleIsPlaying, onClick, ...rest } = props;
-  const [isPlaying, setIsPlaying] = useState(handleIsPlaying());
+  const { isPlaying, onClick, ...rest } = props;
   return (
     <Button
       variant="text"
       {...rest}
-      onClick={(e) => {
-        if (onClick) {
-          onClick(e);
-        }
-        setIsPlaying(handleIsPlaying());
-      }}
+      onClick={onClick}
       startIcon={isPlaying ? <Pause /> : <PlayArrow />}
     >
       {isPlaying ? "Pause" : "Play"}
