@@ -1,9 +1,10 @@
 import { Stop } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IMusicPlayer } from "../services/IMusicPlayer";
 import TempoSlider from "./TempoSlider";
 import PlayPauseButton from "./PlayPauseButton";
+import VolumeSlider from "./VolumeSlider";
 
 type Props = {
   player: IMusicPlayer;
@@ -47,7 +48,14 @@ const MusicModalControls: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <TempoSlider value={tempo} setValue={handleChange} player={player} />
+      <Grid container>
+        <Grid item xs={12} md={8}>
+          <TempoSlider value={tempo} setValue={handleChange} player={player} />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <VolumeSlider player={player} />
+        </Grid>
+      </Grid>
       <Box className="flex justify-center p-2 border-t-2 border-t-slate-500">
         <PlayPauseButton
           handleIsPlaying={handleIsPlaying}
