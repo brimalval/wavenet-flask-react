@@ -7,20 +7,20 @@ function Home() {
     <Grid container className="h-full">
       <Grid
         item
-        sm={8}
+        sm={7}
         className="flex flex-col items-start justify-center sm:pl-20 p-10 space-y-10 z-1"
       >
-        <Typography variant="body1">
+        <p className="text-xl font-semibold text-neutral-700">
           A simple application to serve as an easy way to interact with an
           implementation of the WaveNet architecture for generating MIDI
           melodies.
-        </Typography>
-        <Typography variant="body1">
+        </p>
+        <p className="italic text-neutral-600">
           This is in partial fulfillment of "Automatic Generation of Pop Melody
           Using a Neural Network Architecture based on WaveNet", a thesis of
           three students from the Technological Institute of the Philippines -
           Quezon City: Genrev Zapa, Brian Valencia, and Ayin Medina.
-        </Typography>
+        </p>
         <Link to="/dashboard">
           <Button
             type="button"
