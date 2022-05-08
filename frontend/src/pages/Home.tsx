@@ -1,6 +1,6 @@
 import { Button, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import womanImg from "../assets/Woman.png";
+import womanImg from "../assets/Woman-min.png";
 
 function Home() {
   return (
