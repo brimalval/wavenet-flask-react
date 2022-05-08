@@ -65,7 +65,7 @@ const Footer = () => {
                   </ListItem>
                 </a>
                 <a
-                  href="https://github.com/zapagenrevdale/PopMelodyGenerationUsingWaveNet"
+                  href="https://github.com/zapagenrevdale/PopMelodyGenerationGist"
                   target="_blank"
                   rel="noreferrer"
                 >

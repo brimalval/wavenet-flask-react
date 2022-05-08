@@ -10,14 +10,14 @@ api = Blueprint('api', __name__)
 
 res_channel = 128
 skip_channel = 256
-stack_size = 2
+stack_size = 3
 kernel_size = 2
 layer_size = 3
 output_classes = 120
-sequence_length = 50
+sequence_length = 128
 model = Model(res_channel, skip_channel, stack_size, kernel_size,
               layer_size, output_classes, sequence_length)
-model.load("model/version_1/weights_only.h5")
+model.load("model/save_128_256_3_2_3_120_95_limit_all/weights_only.h5")
 converter = Converter()
 
 DEFAULT_BPM = 120
