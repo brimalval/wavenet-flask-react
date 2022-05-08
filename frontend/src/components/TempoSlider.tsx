@@ -24,19 +24,20 @@ const TempoSlider: React.FC<Props> = (props) => {
     setValue(value as number);
   };
   return (
-    <Box className="p-10 flex justify-center">
-      <Box className="flex space-x-4">
+    <Box className="sm:p-10 xs:p-3 space-x-4 flex justify-center">
+      <Box className="flex items-center space-x-4">
         <Typography id="tempo">Tempo:</Typography>
         <Input
           id="tempo"
           name="tempo"
           type="number"
-          size="small"
+          size="medium"
           value={value}
           onChange={handleChange}
           inputProps={{
             min: 45,
             max: 280,
+            className: "w-auto",
           }}
         />
       </Box>

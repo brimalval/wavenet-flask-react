@@ -1,4 +1,4 @@
-import { Download, PlayArrow, Pause } from "@mui/icons-material";
+import { Download, PlayArrow } from "@mui/icons-material";
 import {
   Button,
   CircularProgress,
@@ -33,22 +33,13 @@ type Props = {
 };
 
 const MelodyList: React.FC<Props> = (props) => {
-  const [
-    { currentSong, cache, playing, paused, musicModalOpen, eventIndex },
-    setState,
-  ] = useState<{
+  const [{ currentSong, cache, musicModalOpen }, setState] = useState<{
     currentSong?: Song;
     cache: { [path: string]: Blob };
-    playing: boolean;
-    paused: boolean;
     musicModalOpen: boolean;
-    eventIndex: number;
   }>({
     cache: {},
-    playing: false,
-    paused: false,
     musicModalOpen: false,
-    eventIndex: 0,
   });
 
   const player: IMusicPlayer = useInjection(TYPES.IMusicPlayer);
@@ -60,41 +51,16 @@ const MelodyList: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
-    var mounted = true;
-    if (mounted) {
-      player.setStopCallback(() => {
-        setState((prevState) => ({
-          ...prevState,
-          playing: false,
-          paused: false,
-          eventIndex: 0,
-        }));
-      });
-
-      player.setPlayCallback((index: number) => {
-        setState((prevState) => {
-          return {
-            ...prevState,
-            eventIndex: index,
-          };
-        });
-      });
-    }
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
     const setup = async () => {
       toast.info("Loading instrument...");
       try {
-        await player.setInstrument(instrument);
+        await player.setInstrument(instrument, {
+          gain: 3,
+        });
       } catch (e) {
         toast.error("Error loading instrument. Please try again!");
         return;
       }
-      setState((prev) => ({ ...prev, playing: false }));
       toast.success("Instrument loaded!");
     };
     setup();
@@ -103,6 +69,12 @@ const MelodyList: React.FC<Props> = (props) => {
   useEffect(() => {
     clearCache();
   }, [songs]);
+
+  useEffect(() => {
+    return () => {
+      player.stop();
+    };
+  }, []);
 
   if (!player) {
     return (
@@ -145,7 +117,6 @@ const MelodyList: React.FC<Props> = (props) => {
   const handlePlay = async (song: Song) => {
     if (player.isPlaying()) {
       player.pause();
-      setState((prev) => ({ ...prev, playing: false }));
       if (song.path === currentSong?.path) {
         return;
       }
@@ -156,7 +127,6 @@ const MelodyList: React.FC<Props> = (props) => {
         await player.play();
         setState((prev) => ({
           ...prev,
-          playing: true,
           musicModalOpen: true,
         }));
       } catch (e) {
@@ -173,8 +143,6 @@ const MelodyList: React.FC<Props> = (props) => {
         setState((prevState) => ({
           ...prevState,
           currentSong: song,
-          eventIndex: 0,
-          playing: true,
           musicModalOpen: true,
         }));
       } catch (e) {
@@ -184,32 +152,6 @@ const MelodyList: React.FC<Props> = (props) => {
     }
   };
 
-  const handleStop = () => {
-    player.stop();
-    setState((prev) => ({
-      ...prev,
-      playing: false,
-      eventIndex: 0,
-    }));
-  };
-
-  const getPlayPauseButton = (song: Song, extraAction?: () => any) => {
-    const handleClick = async () => {
-      handlePlay(song);
-      if (extraAction) {
-        await extraAction();
-      }
-    };
-    return song.path === currentSong?.path && playing ? (
-      <Button variant="text" startIcon={<Pause />} onClick={handleClick}>
-        Pause
-      </Button>
-    ) : (
-      <Button variant="text" startIcon={<PlayArrow />} onClick={handleClick}>
-        Play
-      </Button>
-    );
-  };
   const durationMap = {
     4: {
       name: "Whole note",
@@ -237,24 +179,17 @@ const MelodyList: React.FC<Props> = (props) => {
       {currentSong && (
         <MusicModal
           open={musicModalOpen}
-          eventIndex={eventIndex}
           song={currentSong}
-          showTempoSlider={true}
           player={player}
           handleClose={() => {
             player.stop();
             setState((prev) => ({
               ...prev,
               playing: false,
-              paused: false,
               musicModalOpen: false,
               eventIndex: 0,
             }));
           }}
-          handleStop={handleStop}
-          controlButtonGetter={(extraAction) =>
-            getPlayPauseButton(currentSong, extraAction)
-          }
         />
       )}
       <Table>
@@ -270,11 +205,7 @@ const MelodyList: React.FC<Props> = (props) => {
           {props.songs.map((song, index) => (
             <TableRow
               key={index}
-              className={
-                song.path === currentSong?.path && musicModalOpen
-                  ? "bg-green-300"
-                  : ""
-              }
+              className={song.path in cache ? "bg-neutral-100" : ""}
             >
               <TableCell>{index + 1}</TableCell>
               <TableCell>
@@ -304,7 +235,14 @@ const MelodyList: React.FC<Props> = (props) => {
               </TableCell>
               <TableCell>
                 <div className="flex justify-end">
-                  {getPlayPauseButton(song)}
+                  <Button
+                    startIcon={<PlayArrow />}
+                    onClick={() => {
+                      handlePlay(song);
+                    }}
+                  >
+                    Play
+                  </Button>
                   <Button
                     variant="text"
                     startIcon={<Download />}

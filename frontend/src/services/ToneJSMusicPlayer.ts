@@ -14,10 +14,11 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
   private parsedMidi: Midi | null;
   private notePlayCallback: (noteIndex: number) => void;
   private stopCallback: () => void;
+  private instrument: string;
+  private volume: number = 1;
 
   constructor() {
     Tone.Transport.loop = true;
-    (window as any).Transport = Tone.Transport;
     this.parsedMidi = null;
   }
 
@@ -36,9 +37,9 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
         // Convert start time of the note (in ticks) to seconds
         const startTime = midi.header.ticksToSeconds(note.ticks);
         Tone.Transport.schedule((time) => {
-          this.soundFont!.play(note.name).stop(
-            time + midi.header.ticksToSeconds(note.durationTicks)
-          );
+          this.soundFont!.play(note.name, 0, {
+            gain: this.volume, // Default value is 1
+          }).stop(time + midi.header.ticksToSeconds(note.durationTicks));
           if (this.notePlayCallback) {
             this.notePlayCallback(index + 1);
           }
@@ -54,7 +55,7 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
     return 0;
   }
   getInstrument(): string {
-    return "";
+    return this.instrument;
   }
   getNotes(): { note: string }[] {
     if (!this.parsedMidi) {
@@ -71,10 +72,10 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
     return this.song;
   }
   getTempo(): number {
-    return 0;
+    return Tone.Transport.bpm.value;
   }
   getVolume(): number {
-    return 0;
+    return this.volume;
   }
   isPlaying(): boolean {
     return Tone.Transport.state === "started";
@@ -105,6 +106,7 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
         instrument,
         options
       );
+      this.instrument = instrument;
     } catch (error) {
       throw new Error("Error setting instrument");
     }
@@ -118,7 +120,9 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
   setTempo(tempo: number): void {
     Tone.Transport.bpm.value = tempo;
   }
-  setVolume(volume: number): void {}
+  setVolume(volume: number): void {
+    this.volume = volume;
+  }
   skipToPercent(percent: number): void {}
   stop(): void {
     Tone.Transport.stop();
