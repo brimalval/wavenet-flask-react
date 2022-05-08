@@ -32,6 +32,7 @@ function Dashboard() {
     value: Key;
     scale: string;
     scaleString: Scale;
+    mood: string;
   };
   const keyOptions: KeyOption[] = [];
   Object.entries(Scale).forEach(([scale, scaleString]) =>
@@ -41,9 +42,71 @@ function Dashboard() {
         value: `${note}${scaleString}`,
         scale: `${scale} Scale`,
         scaleString: scaleString,
+        mood: "",
       })
     )
   );
+  const keysByMood = {
+    upbeat: [
+      "Amaj",
+      "A#maj",
+      "Cmaj",
+      "C#maj",
+      "D#maj",
+      "Emaj",
+      "Gmaj",
+      "G#maj",
+      "Amin",
+      "Bmin",
+    ],
+    mellow: [
+      "Amaj",
+      "Bmaj",
+      "G#maj",
+      "A#min",
+      "Cmin",
+      "C#min",
+      "Dmin",
+      "D#min",
+      "Emin",
+      "Fmin",
+      "F#min",
+      "Gmin",
+      "G#min",
+    ],
+    neutral: ["Dmaj", "Fmaj", "F#maj"],
+  };
+  Object.entries(keysByMood).forEach(([mood, keys]) => {
+    keys.forEach((key) => {
+      const keyOption = keyOptions.find((k) => k.value === key);
+      if (keyOption) {
+        // Capitalize first letter of mood
+        keyOption.mood = mood.charAt(0).toUpperCase() + mood.slice(1);
+      }
+    });
+  });
+  keyOptions.push({
+    label: "A Major",
+    value: "Amaj",
+    scale: "Major Scale",
+    scaleString: Scale.Major,
+    mood: "Upbeat",
+  });
+  keyOptions.push({
+    label: "G# Major",
+    value: "G#maj",
+    scale: "Major Scale",
+    scaleString: Scale.Major,
+    mood: "Upbeat",
+  });
+  // Sort by mood, then alphabetically
+  keyOptions.sort((a, b) => {
+    if (a.mood === b.mood) {
+      return a.label.localeCompare(b.label);
+    } else {
+      return a.mood.localeCompare(b.mood);
+    }
+  });
   const [songs, setSongs] = useState<Song[]>([]);
   const noteDurations = [
     {
@@ -162,13 +225,15 @@ function Dashboard() {
               </DashboardCard>
             </Grid>
 
+            {console.log(keyOptions)}
+
             <Grid item xs={12} sm={6} md={3} className="md:pr-3">
               <DashboardCard title="Key" className="h-full">
                 <Tooltip title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s).">
                   <Autocomplete
                     id="key"
                     defaultValue={keyOptions[0]}
-                    groupBy={(option) => option.scale}
+                    groupBy={(option) => option.mood}
                     onChange={(event, value) => {
                       setFieldValue("key", value);
                     }}
