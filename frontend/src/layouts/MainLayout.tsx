@@ -1,32 +1,27 @@
-import { Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { ToastContainer } from "material-react-toastify";
 import { Link, Outlet } from "react-router-dom";
+import { LogoWithText } from "../assets/logo/Logo";
 
 function MainLayout() {
   return (
     <>
-      <header className="bg-primary p-4 h-[65px]">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <header className="bg-primary p-4 h-[65px] flex items-center">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <Link to="/">
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            fontFamily="Poppins, sans-serif"
-            className="uppercase border-b-2 border-slate-400 inline-block"
-            color="white"
-          >
-            Pop Melody Generator
-          </Typography>
+          <Box className="h-[65px]">
+            <LogoWithText className="h-full w-auto" />
+          </Box>
         </Link>
       </header>
       <main className="min-h-[calc(100vh-65px)] h-full flex flex-col justify-between bg-gray-200">

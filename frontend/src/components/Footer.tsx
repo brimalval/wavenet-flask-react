@@ -7,6 +7,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import { LogoWithText } from "../assets/logo/Logo";
 
 const Footer = () => {
   return (
@@ -16,15 +17,9 @@ const Footer = () => {
           <Grid item xs={12} sm={7}>
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  fontFamily="Poppins, sans-serif"
-                  className="uppercase border-b-2 border-slate-400 inline-block"
-                  color="white"
-                >
-                  Pop Melody Generator
-                </Typography>
+                <Box className="h-[50px]">
+                  <LogoWithText className="h-full w-auto" />
+                </Box>
               </Grid>
               <Grid item xs={12} className="flex flex-col space-y-2">
                 <Typography variant="body1">
