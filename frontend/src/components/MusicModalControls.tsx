@@ -11,7 +11,7 @@ type Props = {
 };
 const MusicModalControls: React.FC<Props> = (props) => {
   const { player } = props;
-  const [tempo, setTempo] = useState(120);
+  const [tempo, setTempo] = useState(90);
   const [isPlaying, setIsPlaying] = useState(true);
   const handleChange = async (value: number) => {
     setTempo(value);
@@ -22,13 +22,17 @@ const MusicModalControls: React.FC<Props> = (props) => {
     var mounted = true;
     if (mounted) {
       player.on("endOfFile", () => {
-        setTempo(120);
+        setTempo(90);
       });
     }
     return () => {
       mounted = false;
     };
   }, [player]);
+
+  useEffect(() => {
+    handleChange(90);
+  }, []);
 
   const handlePlay = async () => {
     if (player.isPlaying()) {
@@ -42,7 +46,8 @@ const MusicModalControls: React.FC<Props> = (props) => {
 
   const handleStop = async () => {
     await player.stop();
-    setTempo(120);
+    setTempo(90);
+    player.setTempo(90);
     setIsPlaying(false);
   };
   return (
