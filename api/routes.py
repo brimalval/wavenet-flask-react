@@ -20,7 +20,7 @@ model = Model(res_channel, skip_channel, stack_size, kernel_size,
 model.load("model/save_128_256_3_2_3_120_95_limit_all/weights_only.h5")
 converter = Converter()
 
-DEFAULT_BPM = 120
+DEFAULT_BPM = 90
 
 @api.route('/predict', methods=['POST'])
 def predict():
@@ -46,7 +46,7 @@ def predict():
         # Get quarterLengths of the stream
         quarter_lengths = stream.highestTime
         # Convert quarter lengths to seconds
-        duration = ((quarter_lengths + 1) / DEFAULT_BPM) * 60
+        duration = ((quarter_lengths) / DEFAULT_BPM) * 60
         results.append({
             "notes": [
                 {

@@ -125,8 +125,8 @@ export class ToneJSMusicPlayer implements IMusicPlayer {
   }
   skipToPercent(percent: number): void {}
   stop(): void {
-    Tone.Transport.stop();
-    Tone.Transport.bpm.value = 120;
+    Tone.Transport.pause();
+    Tone.Transport.position = "0:0:0"
     if (this.stopCallback) {
       this.stopCallback();
     }
