@@ -1,6 +1,8 @@
 from music21 import note, stream, converter
 from bidict import bidict
 import random
+import numpy as np
+from numpy.random import choice
 
 notes_map = bidict({
     'C': 0,
@@ -33,6 +35,11 @@ minor_scale_interval = [0, 10, 15, 25, 35,
 
 
 class Converter:
+
+    def __init__(self):
+        with open('model/utils/key_with_notes_and_prob.npy', 'rb') as f:
+            self.key_with_notes_and_prob = np.load(f, allow_pickle=True)[()]
+
     # Function to create a music21 stream from a list of notes
 
     @staticmethod
@@ -88,13 +95,10 @@ class Converter:
 
     def generate_random_notes(self, key, sequence_length):
         x = []
-        scale = self.get_scale(key)
         for _ in range(sequence_length):
-            random_pitch = random.choice(scale)
-            random_duration = random.randint(0, 4)
-            random_note = random_pitch + random_duration
+            random_note = choice(self.key_with_notes_and_prob[key]["notes"], 1,
+                                 p=self.key_with_notes_and_prob[key]["probabilities"])
             x.append(random_note)
-        print(x)
         return x
 
 
