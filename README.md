@@ -15,4 +15,25 @@ This is in partial fulfillment of my, Genrev Zapa's, and Ayin Medina's thesis, "
    3. Activate the virtual environment using `./venv/Scripts/activate`
    4. Install the back-end dependencies using `pip install -r requirements.txt`
 4. Run the server using `python ./server.py`
-###### This process will be automated once the application is deployed
+
+## Application Guide
+### Pages
+* The landing page
+    * Features background information on the application
+* Dashboard
+    * The primary page for setting parameters and generating melodies
+
+    ![Pop Melody AI dashboard](https://i.imgur.com/IRzwI4s.png)
+    * User can select the type of instrument with which to play the generated melodies; the soundfonts are loaded from [Gleitz's MIDI.js soundfonts](https://gleitz.github.io/midi-js-soundfonts/)
+    ![Pop Melody AI instrument selection](https://i.imgur.com/tKgQIXA.png)
+    * The user will be notified if the instrument has been loaded
+    ![Toast notification for instrument loading](https://i.imgur.com/6dH3Tkj.png)
+    * Key can be selected to limit the kinds of notes that will appear on the melody/ies
+    
+    ![Selection of musical key](https://i.imgur.com/XTwOBbu.png)
+    * The rhythm of the generated melodies can be altered by setting whether the generated notes all have the same duration or allowing the underlying model to decide the duration of the individual notes
+    
+    ![Rhythm characteristics](https://i.imgur.com/CzI69HI.png)
+    * The duration of the individual melodies can also be influenced by selecting the number of notes to generate; a maximum of 100 notes can be generated and a minimum of 10
+    ![Note count field](https://i.imgur.com/kX4tgTj.png)
+    
