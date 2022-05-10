@@ -227,7 +227,7 @@ const MelodyList: React.FC<Props> = (props) => {
                 ))}
               </TableCell>
               <TableCell>
-                <Tooltip title="Assuming 90 BPM and x/4 time signature">
+                <Tooltip title="Assuming 120 BPM and x/4 time signature">
                   <Typography variant="body2">
                     {song.duration.toFixed(2)} seconds
                   </Typography>
