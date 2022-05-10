@@ -34,6 +34,7 @@ function Dashboard() {
     scaleString: Scale;
     mood: string;
   };
+  const [sortKey, setSortKey] = useState<keyof KeyOption>("scale");
   const keyOptions: KeyOption[] = [];
   Object.entries(Scale).forEach(([scale, scaleString]) =>
     Object.values(Note).forEach((note) =>
@@ -98,6 +99,14 @@ function Dashboard() {
     scale: "Major Scale",
     scaleString: Scale.Major,
     mood: "Upbeat",
+  });
+  const keyOptionsUnique: KeyOption[] = [];
+  const uniquenessChecker: string[] = [];
+  keyOptions.forEach((option) => {
+    if (!uniquenessChecker.includes(option.value)) {
+      keyOptionsUnique.push(option);
+      uniquenessChecker.push(option.value);
+    }
   });
   // Sort by mood, then alphabetically
   keyOptions.sort((a, b) => {
@@ -224,16 +233,27 @@ function Dashboard() {
                 />
               </DashboardCard>
             </Grid>
-
-            {console.log(keyOptions)}
-
             <Grid item xs={12} sm={6} md={3} className="md:pr-3">
               <DashboardCard title="Key" className="h-full">
+                <FormControl className="mb-10">
+                  <InputLabel id="sortbyLabel">Sort By</InputLabel>
+                  <Select
+                    value={sortKey}
+                    labelId="sortbyLabel"
+                    label="Sort By"
+                    onChange={(event) => {
+                      setSortKey(event.target.value as keyof KeyOption);
+                    }}
+                  >
+                    <MenuItem value="mood">Mood</MenuItem>
+                    <MenuItem value="scale">Scale</MenuItem>
+                  </Select>
+                </FormControl>
                 <Tooltip title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s).">
                   <Autocomplete
                     id="key"
                     defaultValue={keyOptions[0]}
-                    groupBy={(option) => option.mood}
+                    groupBy={(option) => option[sortKey]}
                     onChange={(event, value) => {
                       setFieldValue("key", value);
                     }}
@@ -241,7 +261,7 @@ function Dashboard() {
                     isOptionEqualToValue={(option, check) =>
                       option.value === check.value
                     }
-                    options={keyOptions}
+                    options={sortKey === "mood" ? keyOptions : keyOptionsUnique}
                     renderInput={(params) => (
                       <TextField
                         {...params}
