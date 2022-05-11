@@ -150,9 +150,9 @@ function Dashboard() {
     }).typeError("Please select a key"),
     sound: Yup.string().required("Please select an instrument"),
     noteCount: Yup.number()
-      .required("Please enter a number [10-100]")
-      .max(100, "Enter a number between 10-100")
-      .min(10, "Enter a number between 10-100"),
+      .required("Please enter a number [1-50]")
+      .max(50, "Enter a number between 1-50")
+      .min(1, "Enter a number between 1-50"),
     noteDuration: Yup.string().when("variedRhythm", {
       is: false,
       then: Yup.string().required("Note duration is required"),
@@ -171,7 +171,7 @@ function Dashboard() {
       melodyCount: 1,
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
-      noteCount: 10,
+      noteCount: 20,
       noteDuration: "quarter",
     },
     validationSchema: validationSchema,
