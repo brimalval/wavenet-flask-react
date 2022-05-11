@@ -182,6 +182,7 @@ const MelodyList: React.FC<Props> = (props) => {
           song={currentSong}
           player={player}
           handleClose={() => {
+            player.setTempo(120);
             player.stop();
             setState((prev) => ({
               ...prev,
