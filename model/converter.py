@@ -1,6 +1,7 @@
 from music21 import note, stream, converter
 from bidict import bidict
 import random
+import numpy as np
 
 notes_map = bidict({
     'C': 0,
@@ -94,8 +95,17 @@ class Converter:
             random_duration = random.randint(0, 4)
             random_note = random_pitch + random_duration
             x.append(random_note)
-        print(x)
         return x
+
+    def select_primer_notes(self, key, song_primers, ids_on_key, sequence_length):
+        primers = None
+        while not primers:
+            song_id = int(np.random.choice(ids_on_key[key])) - 1
+            if len(song_primers[song_id]) > sequence_length:
+                primers = song_primers[song_id].tolist()
+
+        random_index = random.randint(0, len(primers) - 1 - sequence_length)
+        return primers[random_index:random_index + sequence_length]
 
 
 # Test code

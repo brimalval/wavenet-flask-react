@@ -10,16 +10,9 @@ class Model:
         self.model = WaveNet(residual_channel, skip_channel, stack_size, kernel_size, layer_size, output_classes,
                              sequence_length)
         self.converter = Converter()
-        self.compile()
+        self.print_summary()
 
-    def compile(self):
-        """Compiles the model.
-        """        
-        self.model.compile(
-            optimizer=keras.optimizers.Adam(learning_rate=0.001),
-            loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
-            metrics=["accuracy"]
-        )
+    def print_summary(self):
         print(self.model.model().summary())
 
     def load(self, directory):
@@ -51,7 +44,7 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length,  key, output_classes, is_varied, note_duration=None, file_name=None, get_stream=True):
+    def predict(self, x_data, note_length, sequence_length,  key, output_classes, is_varied, note_duration=None, file_name=None, get_stream=True, prime_melody=False):
         """Gives a series of notes based on the input data.
 
         Args:
@@ -78,7 +71,10 @@ class Model:
             1, sequence_length, 1).astype("float32") / (output_classes-1)
         for i in range(note_length):
             y = self.model.predict(x_data).ravel()
-            arg_y = self.filter_note_with_key(y, key)
+            if (not prime_melody):
+                arg_y = self.filter_note_with_key(y, key)
+            else:
+                arg_y = np.argmax(y)
             output.append(arg_y)
             x = x_data.ravel().tolist()
             x.pop(0)

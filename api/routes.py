@@ -21,6 +21,14 @@ model.load("model/save_128_256_3_2_3_120_95_limit_all/weights_only.h5")
 converter = Converter()
 
 DEFAULT_BPM = 120
+# load song primers
+with open(f'model/utils/songs_mapped_int.npy', 'rb') as f:
+    song_primers = np.load(f, allow_pickle=True)[()]
+
+# load song IDs by musical key
+with open(f'model/utils/ids_on_key.npy', 'rb') as f:
+    ids_on_key = np.load(f, allow_pickle=True)[()]
+
 
 @api.route('/predict', methods=['POST'])
 def predict():
@@ -33,29 +41,44 @@ def predict():
     melody_count = data['melodyCount'] if 'melodyCount' in data else 1
     is_varied = data['variedRhythm']
     note_duration = data['noteDuration']
-
+    prime_melodies = data['primeMelodies'] if 'primeMelodies' in data else None
     results = []
     for i in range(melody_count):
-        x = converter.generate_random_notes(key, sequence_length)
+        if (prime_melodies):
+            x = converter.select_primer_notes(key, song_primers, ids_on_key, sequence_length)
+        else:
+            x = converter.generate_random_notes(key, sequence_length)
         # Create unique file name for the prediction that includes the key, index, and date
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
         result, stream = model.predict(x, length, sequence_length,
-                               key, output_classes, is_varied, note_duration, upload_path)
+                                       key, output_classes, is_varied, note_duration, upload_path)
         # Get quarterLengths of the stream
         quarter_lengths = stream.highestTime
         # Convert quarter lengths to seconds
         duration = ((quarter_lengths) / DEFAULT_BPM) * 60
+        notes = [
+            {
+                "name": x.nameWithOctave,
+                "duration": x.quarterLength,
+            } for x in result
+        ]
+        if (prime_melodies):
+            names = [note['name'] for note in notes]
+            scale = list(set(names))
+            # Sort by pitch
+            scale.sort(key=lambda x: x[0] if x[1] != "#" else x[:2])
+            # Sort by octave
+            scale.sort(key=lambda x: x[-1])
+        else:
+            scale = converter.get_scale(key=key, notes_as_ints=False)
+
+        print(scale)
         results.append({
-            "notes": [
-                {
-                    "name": x.nameWithOctave,
-                    "duration": x.quarterLength,
-                } for x in result
-            ],
+            "notes": notes,
             "path": upload_path + ".mid",
-            "scale": converter.get_scale(key=key, notes_as_ints=False),
+            "scale": scale,
             "duration": duration,
             "title": f"{data['key']} Melody #{i+1}"
         })
