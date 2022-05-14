@@ -67,8 +67,22 @@ def predict():
         if (prime_melodies):
             names = [note['name'] for note in notes]
             scale = list(set(names))
+            scale_order = {
+                "C": 0,
+                "C#": 1,
+                "D": 2,
+                "D#": 3,
+                "E": 4,
+                "F": 5,
+                "F#": 6,
+                "G": 7,
+                "G#": 8,
+                "A": 9,
+                "A#": 10,
+                "B": 11
+            }
             # Sort by pitch
-            scale.sort(key=lambda x: x[0] if x[1] != "#" else x[:2])
+            scale.sort(key=lambda x: scale_order[x[0]] if x[1] != "#" else scale_order[x[:2]])
             # Sort by octave
             scale.sort(key=lambda x: x[-1])
         else:
