@@ -1,5 +1,7 @@
 import {
   Autocomplete,
+  Box,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -173,6 +175,7 @@ function Dashboard() {
       sound: "acoustic_grand_piano" as InstrumentName,
       noteCount: 20,
       noteDuration: "quarter",
+      primeMelodies: false,
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
@@ -196,41 +199,71 @@ function Dashboard() {
           <Grid container rowSpacing={2}>
             <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
               <DashboardCard title="Melody Characteristics">
-                <TextField
-                  label="No. of Melodies"
-                  id="melodyCount"
-                  name="melodyCount"
-                  type="number"
-                  value={values.melodyCount}
-                  onChange={handleChange}
-                  inputProps={{
-                    min: 1,
-                    max: 10,
-                  }}
-                  error={!!errors.melodyCount}
-                  helperText={errors.melodyCount ?? " "}
-                />
-                <Autocomplete
-                  id="sound"
-                  value={values.sound}
-                  defaultValue={undefined}
-                  onChange={(event, newValue) => {
-                    setFieldValue("sound", newValue ?? "");
-                  }}
-                  options={instrumentNamesArray}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
+                <Grid container>
+                  <Grid item xs={8}>
                     <TextField
-                      {...params}
-                      label="Sound"
-                      variant="outlined"
-                      margin="normal"
-                      error={!!errors.sound}
-                      helperText={errors.sound ?? " "}
                       fullWidth
+                      label="No. of Melodies"
+                      id="melodyCount"
+                      name="melodyCount"
+                      type="number"
+                      value={values.melodyCount}
+                      onChange={handleChange}
+                      inputProps={{
+                        min: 1,
+                        max: 10,
+                      }}
+                      error={!!errors.melodyCount}
+                      helperText={errors.melodyCount ?? " "}
                     />
-                  )}
-                />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Tooltip
+                      title="Prime the melodies with a section of the model's training set; this will usually make the melodies sound better. Normally, the melodies are primed with random notes within the selected key."
+                      placement="top"
+                    >
+                      <FormControlLabel
+                        className="-mt-3"
+                        control={
+                          <Checkbox
+                            name="primeMelodies"
+                            color="primary"
+                            checked={values.primeMelodies}
+                            onChange={handleChange}
+                          />
+                        }
+                        label={<FormHelperText>Prime</FormHelperText>}
+                        labelPlacement="top"
+                      />
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+                <Tooltip
+                  title="The sound that will be used to play the notes in the melody/ies. Note that the sound does not persist on the downloaded files; they are MIDI files, you get to control what sound will be used to play the notes with other software."
+                  placement="top"
+                >
+                  <Autocomplete
+                    id="sound"
+                    value={values.sound}
+                    defaultValue={undefined}
+                    onChange={(event, newValue) => {
+                      setFieldValue("sound", newValue ?? "");
+                    }}
+                    options={instrumentNamesArray}
+                    getOptionLabel={(option) => option}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Sound"
+                        variant="outlined"
+                        margin="normal"
+                        error={!!errors.sound}
+                        helperText={errors.sound ?? " "}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Tooltip>
               </DashboardCard>
             </Grid>
             <Grid item xs={12} sm={6} md={3} className="md:pr-3">
@@ -249,7 +282,10 @@ function Dashboard() {
                     <MenuItem value="scale">Scale</MenuItem>
                   </Select>
                 </FormControl>
-                <Tooltip title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s).">
+                <Tooltip
+                  title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s)."
+                  placement="top"
+                >
                   <Autocomplete
                     id="key"
                     defaultValue={keyOptions[0]}
@@ -280,20 +316,25 @@ function Dashboard() {
               <DashboardCard title="Rhythm Characteristics" className="h-full">
                 <Grid container spacing={4}>
                   <Grid item xs={6} className="flex items-center">
-                    <FormControlLabel
-                      value="start"
-                      className="mb-10"
-                      control={
-                        <Switch
-                          name="variedRhythm"
-                          color="primary"
-                          checked={values.variedRhythm}
-                          onChange={handleChange}
-                        />
-                      }
-                      label="Varied Rhythm"
-                      labelPlacement="start"
-                    />
+                    <Tooltip
+                      placement="top"
+                      title="Dictates whether the melodies' notes will all have the same note, or if the model should decide what their durations will be."
+                    >
+                      <FormControlLabel
+                        value="start"
+                        className="mb-10"
+                        control={
+                          <Checkbox
+                            name="variedRhythm"
+                            color="primary"
+                            checked={values.variedRhythm}
+                            onChange={handleChange}
+                          />
+                        }
+                        label="Varied Rhythm"
+                        labelPlacement="start"
+                      />
+                    </Tooltip>
                     {/* <TextField
                     fullWidth
                     label="Lowest Note Duration"
