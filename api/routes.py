@@ -17,7 +17,7 @@ output_classes = 120
 sequence_length = 128
 model = Model(res_channel, skip_channel, stack_size, kernel_size,
               layer_size, output_classes, sequence_length)
-model.load("model/save_128_256_3_2_3_120_95_limit_all/weights_only.h5")
+model.load("model/last_trained/weights_only.h5")
 converter = Converter()
 
 DEFAULT_BPM = 120
@@ -53,7 +53,7 @@ def predict():
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
         result, stream = model.predict(x, length, sequence_length,
-                                       key, output_classes, is_varied, note_duration, upload_path)
+                                       key, output_classes, is_varied, note_duration, upload_path, prime_melody=prime_melodies)
         # Get quarterLengths of the stream
         quarter_lengths = stream.highestTime
         # Convert quarter lengths to seconds

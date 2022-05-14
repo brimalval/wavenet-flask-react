@@ -95,7 +95,7 @@ class WaveNet(keras.Model):
         self.kernel_size = kernel_size
         self.stack_size = stack_size
         self.layer_size = layer_size
-        self.causal_conv1D = DilatedCausalConvolution1D(output_channels, kernel_size, dilation_rate=1)
+        self.causal_conv1D = DilatedCausalConvolution1D(output_channels, kernel_size=1, dilation_rate=1)
         # TODO: Might only need one channel
         self.stack_residual_blocks = StacksResidualBlocks(input_channels, output_channels, kernel_size, stack_size,
                                                           layer_size)
@@ -110,7 +110,7 @@ class WaveNet(keras.Model):
     def call(self, input_x, training=False):
         x = self.causal_conv1D(input_x)
         skip_size = self.calculate_skip_size(x)
-        _, skip_connection_outputs = self.stack_residual_blocks(input_x, skip_size=skip_size, training=training)
+        _, skip_connection_outputs = self.stack_residual_blocks(x, skip_size=skip_size, training=training)
         x = self.classifier(skip_connection_outputs)
         return x
 
