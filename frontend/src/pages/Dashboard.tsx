@@ -1,5 +1,7 @@
 import {
   Autocomplete,
+  Box,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -197,20 +199,45 @@ function Dashboard() {
           <Grid container rowSpacing={2}>
             <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
               <DashboardCard title="Melody Characteristics">
-                <TextField
-                  label="No. of Melodies"
-                  id="melodyCount"
-                  name="melodyCount"
-                  type="number"
-                  value={values.melodyCount}
-                  onChange={handleChange}
-                  inputProps={{
-                    min: 1,
-                    max: 10,
-                  }}
-                  error={!!errors.melodyCount}
-                  helperText={errors.melodyCount ?? " "}
-                />
+                <Grid container>
+                  <Grid item xs={8}>
+                    <TextField
+                      fullWidth
+                      label="No. of Melodies"
+                      id="melodyCount"
+                      name="melodyCount"
+                      type="number"
+                      value={values.melodyCount}
+                      onChange={handleChange}
+                      inputProps={{
+                        min: 1,
+                        max: 10,
+                      }}
+                      error={!!errors.melodyCount}
+                      helperText={errors.melodyCount ?? " "}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Tooltip
+                      title="Prime the melodies with a section of the model's training set; this will usually make the melodies sound better. Normally, the melodies are primed with random notes within the selected key."
+                      placement="top"
+                    >
+                      <FormControlLabel
+                        className="-mt-3"
+                        control={
+                          <Checkbox
+                            name="primeMelodies"
+                            color="primary"
+                            checked={values.primeMelodies}
+                            onChange={handleChange}
+                          />
+                        }
+                        label={<FormHelperText>Prime</FormHelperText>}
+                        labelPlacement="top"
+                      />
+                    </Tooltip>
+                  </Grid>
+                </Grid>
                 <Tooltip
                   title="The sound that will be used to play the notes in the melody/ies. Note that the sound does not persist on the downloaded files; they are MIDI files, you get to control what sound will be used to play the notes with other software."
                   placement="top"
@@ -297,7 +324,7 @@ function Dashboard() {
                         value="start"
                         className="mb-10"
                         control={
-                          <Switch
+                          <Checkbox
                             name="variedRhythm"
                             color="primary"
                             checked={values.variedRhythm}
@@ -376,25 +403,6 @@ function Dashboard() {
             </Grid>
 
             <Grid item xs={12} className="text-right">
-              <Tooltip
-                title="Prime the melodies with a section of the model's training set; this will usually make the melodies sound better. Normally, the melodies are primed with random notes within the selected key."
-                placement="top"
-              >
-                <FormControlLabel
-                  value="start"
-                  control={
-                    <Switch
-                      className="mr-3"
-                      name="primeMelodies"
-                      color="primary"
-                      checked={values.primeMelodies}
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Prime Melodies"
-                  labelPlacement="start"
-                />
-              </Tooltip>
               <LoadingButton
                 loading={isSubmitting}
                 loadingPosition="start"
