@@ -1,19 +1,19 @@
 import {
   Autocomplete,
-  Box,
   Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
-  Switch,
   TextField,
   Tooltip,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import presets from "../utils/presets";
 import AddIcon from "@mui/icons-material/Add";
 import { useFormik } from "formik";
 import DashboardCard from "../components/DashboardCard";
@@ -27,6 +27,7 @@ import instrumentNamesArray from "../utils/types/Instrument";
 import * as Yup from "yup";
 import Footer from "../components/Footer";
 import { toast } from "material-react-toastify";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 function Dashboard() {
   type KeyOption = {
@@ -176,6 +177,7 @@ function Dashboard() {
       noteCount: 20,
       noteDuration: "quarter",
       primeMelodies: false,
+      preset: -1,
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
@@ -192,12 +194,19 @@ function Dashboard() {
     },
   });
 
+  const handlePresetPlay = (presetIdx: number) => {
+    const preset = presets.find((p) => p.id === presetIdx);
+    if (preset) {
+      console.log("Play song at ", preset.path);
+    }
+  };
+
   return (
     <>
       <div className="w-full p-6 flex flex-col space-y-4">
         <form onSubmit={handleSubmit}>
           <Grid container rowSpacing={2}>
-            <Grid item xs={12} sm={6} md={3} className="sm:pr-3">
+            <Grid item xs={12} sm={6} md={4} className="sm:pr-3">
               <DashboardCard title="Melody Characteristics">
                 <Grid container>
                   <Grid item xs={8}>
@@ -264,9 +273,48 @@ function Dashboard() {
                     )}
                   />
                 </Tooltip>
+                <Grid container>
+                  <Grid item xs={10}>
+                    <Tooltip
+                      title="Select a melody that will be compared to the generated melodies for similarity."
+                      placement="top"
+                    >
+                      <FormControl className="mb-3" fullWidth>
+                        <InputLabel id="presetLabel">Melody Preset</InputLabel>
+                        <Select
+                          value={values.preset}
+                          name="preset"
+                          labelId="presetLabel"
+                          label="Melody Preset"
+                          onChange={handleChange}
+                        >
+                          <MenuItem value={-1}>None</MenuItem>
+                          {presets.map((preset) => (
+                            <MenuItem value={preset.id} key={preset.id}>
+                              {preset.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{errors.preset ?? " "}</FormHelperText>
+                      </FormControl>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={2} className="text-center mt-2">
+                    <Tooltip title="Preview selected preset">
+                      <IconButton
+                        color="primary"
+                        disabled={values.preset === -1}
+                        onClick={() => handlePresetPlay(values.preset)}
+                        component="span"
+                      >
+                        <PlayArrowIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
               </DashboardCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className="md:pr-3">
+            <Grid item xs={12} sm={6} md={4} className="md:pr-3">
               <DashboardCard title="Key" className="h-full">
                 <FormControl className="mb-10">
                   <InputLabel id="sortbyLabel">Sort By</InputLabel>
@@ -286,36 +334,46 @@ function Dashboard() {
                   title="The key of the song(s) to be generated. The key will limit the range of notes that are used in the song(s)."
                   placement="top"
                 >
-                  <Autocomplete
-                    id="key"
-                    defaultValue={keyOptions[0]}
-                    groupBy={(option) => option[sortKey]}
-                    onChange={(event, value) => {
-                      setFieldValue("key", value);
-                    }}
-                    getOptionLabel={(option) => option.label}
-                    isOptionEqualToValue={(option, check) =>
-                      option.value === check.value
-                    }
-                    options={sortKey === "mood" ? keyOptions : keyOptionsUnique}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="Select Key"
-                        id="key"
-                        error={!!errors.key}
-                        helperText={errors.key ?? " "}
-                      />
-                    )}
-                  />
+                  <FormControl>
+                    <Autocomplete
+                      id="key"
+                      disabled={values.preset !== -1}
+                      defaultValue={keyOptions[0]}
+                      groupBy={(option) => option[sortKey]}
+                      onChange={(event, value) => {
+                        setFieldValue("key", value);
+                      }}
+                      getOptionLabel={(option) => option.label}
+                      isOptionEqualToValue={(option, check) =>
+                        option.value === check.value
+                      }
+                      options={
+                        sortKey === "mood" ? keyOptions : keyOptionsUnique
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder="Select Key"
+                          id="key"
+                          error={!!errors.key}
+                          helperText={errors.key ?? " "}
+                        />
+                      )}
+                    />
+                    <FormHelperText>
+                      {values.preset === -1
+                        ? ""
+                        : "The key of the selected preset will be used."}
+                    </FormHelperText>
+                  </FormControl>
                 </Tooltip>
               </DashboardCard>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <DashboardCard title="Rhythm Characteristics" className="h-full">
                 <Grid container spacing={4}>
-                  <Grid item xs={6} className="flex items-center">
+                  <Grid item xs={12} className="flex items-start">
                     <Tooltip
                       placement="top"
                       title="Dictates whether the melodies' notes will all have the same note, or if the model should decide what their durations will be."
@@ -335,19 +393,8 @@ function Dashboard() {
                         labelPlacement="start"
                       />
                     </Tooltip>
-                    {/* <TextField
-                    fullWidth
-                    label="Lowest Note Duration"
-                    id="rhythmType"
-                    onChange={handleChange}
-                    name="rhythmType"
-                    type="number"
-                  /> */}
                   </Grid>
-                  <Grid item xs={6}>
-                    {/* Spacer */}
-                  </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12}>
                     <Tooltip
                       placement="top"
                       title='All generated notes will have the selected duration. This only applies if "Varied Rhythm" is checked.'
@@ -385,7 +432,7 @@ function Dashboard() {
                       </FormControl>
                     </Tooltip>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label="No. of Notes"
