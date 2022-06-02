@@ -44,7 +44,7 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length,  key, output_classes, is_varied, note_duration=None, file_name=None, get_stream=True, prime_melody=False):
+    def predict(self, x_data, note_length, sequence_length,  key, output_classes, is_varied, note_duration=None, file_name=None,  prime_melody=False):
         """Gives a series of notes based on the input data.
 
         Args:
@@ -59,8 +59,6 @@ class Model:
             the melody will have if is_varied is True. Defaults to None.
             file_name (string, optional): File name that the produced MIDI file will
             be saved as. Defaults to None.
-            get_stream (bool, optional): Whether the Music21 stream should also
-            be returned. Defaults to True.
 
         Returns:
             int[]: The output melody represented as a list of ints.
@@ -85,6 +83,10 @@ class Model:
         notes_result = [self.converter.map_int_to_note(int_note, is_varied, note_duration) for int_note in output]
         stream_result = self.converter.create_song_from_ints(
             output, is_varied, note_duration, file_name)
-        if get_stream:
-            return notes_result, stream_result
-        return notes_result
+        
+        #TODO: Add similarity score
+
+        return {
+            "notes": notes_result,
+            "stream": stream_result
+        }

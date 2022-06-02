@@ -52,8 +52,11 @@ def predict():
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
-        result, stream = model.predict(x, length, sequence_length,
+        output = model.predict(x, length, sequence_length,
                                        key, output_classes, is_varied, note_duration, upload_path, prime_melody=prime_melodies)
+        result = output["notes"];
+        stream = output["stream"];
+        similiarity = output["similarity"] if "similarity" in output else None
         # Get quarterLengths of the stream
         quarter_lengths = stream.highestTime
         # Convert quarter lengths to seconds
@@ -94,7 +97,8 @@ def predict():
             "path": upload_path + ".mid",
             "scale": scale,
             "duration": duration,
-            "title": f"{data['key']} Melody #{i+1}"
+            "title": f"{data['key']} Melody #{i+1}",
+            "similarity": similiarity
         })
     return jsonify(results)
 

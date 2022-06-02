@@ -199,6 +199,7 @@ const MelodyList: React.FC<Props> = (props) => {
             <TableCell width={5}>No.</TableCell>
             <TableCell>Melody</TableCell>
             <TableCell width={10}>Duration</TableCell>
+            <TableCell width={10}>Similarity</TableCell>
             <TableCell width={15}></TableCell>
           </TableRow>
         </TableHead>
@@ -231,6 +232,16 @@ const MelodyList: React.FC<Props> = (props) => {
                 <Tooltip title="Assuming 120 BPM and x/4 time signature">
                   <Typography variant="body2">
                     {song.duration.toFixed(2)} seconds
+                  </Typography>
+                </Tooltip>
+              </TableCell>
+              <TableCell>
+                <Tooltip title="Similarity of the generated melody with the selected preset.">
+                  <Typography variant="body2">
+                    {/* TODO: Add color indicating similarity */}
+                    {song.similarity === null
+                      ? "N/A"
+                      : song.similarity.toFixed(2)}
                   </Typography>
                 </Tooltip>
               </TableCell>
