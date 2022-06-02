@@ -5,7 +5,6 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -27,7 +26,7 @@ import instrumentNamesArray from "../utils/types/Instrument";
 import * as Yup from "yup";
 import Footer from "../components/Footer";
 import { toast } from "material-react-toastify";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PresetPlayButton from "../components/PresetPlayButton";
 
 function Dashboard() {
   type KeyOption = {
@@ -194,13 +193,6 @@ function Dashboard() {
     },
   });
 
-  const handlePresetPlay = (presetIdx: number) => {
-    const preset = presets.find((p) => p.id === presetIdx);
-    if (preset) {
-      console.log("Play song at ", preset.path);
-    }
-  };
-
   return (
     <>
       <div className="w-full p-6 flex flex-col space-y-4">
@@ -300,16 +292,7 @@ function Dashboard() {
                     </Tooltip>
                   </Grid>
                   <Grid item xs={2} className="text-center mt-2">
-                    <Tooltip title="Preview selected preset">
-                      <IconButton
-                        color="primary"
-                        disabled={values.preset === -1}
-                        onClick={() => handlePresetPlay(values.preset)}
-                        component="span"
-                      >
-                        <PlayArrowIcon />
-                      </IconButton>
-                    </Tooltip>
+                    <PresetPlayButton presetIdx={values.preset} />
                   </Grid>
                 </Grid>
               </DashboardCard>

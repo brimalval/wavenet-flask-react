@@ -16,6 +16,7 @@ scheduler.start()
 
 # Set upload folder
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER') or 'uploads'
+app.config['PRESET_FOLDER'] = os.getenv('PRESET_FOLDER') or 'presets'
 
 def clear_uploads():
     shutil.rmtree(app.config['UPLOAD_FOLDER'], ignore_errors=True)
@@ -45,6 +46,13 @@ def uploads(file):
     print("file_name: ", file_name)
     print("file_path: ", os.path.join(app.config["UPLOAD_FOLDER"], file_name))
     return send_from_directory(app.config['UPLOAD_FOLDER'], file_name)
+
+# Route for getting the model's predictions
+@app.route("/presets/<path:file>", methods=["GET"])
+def presets(file):
+    # Get the file name from the file path
+    file_name = file.split("/")[-1]
+    return send_from_directory(app.config['PRESET_FOLDER'], file_name)
 
 # API routes
 app.register_blueprint(api, url_prefix="/api")
