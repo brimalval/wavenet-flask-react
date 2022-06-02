@@ -29,6 +29,9 @@ with open(f'model/utils/songs_mapped_int.npy', 'rb') as f:
 with open(f'model/utils/ids_on_key.npy', 'rb') as f:
     ids_on_key = np.load(f, allow_pickle=True)[()]
 
+with open("presets/presets.npy", 'rb') as f:
+    integer_presets = np.load(f, allow_pickle=True)[()]
+
 
 @api.route('/predict', methods=['POST'])
 def predict():
@@ -42,9 +45,10 @@ def predict():
     is_varied = data['variedRhythm']
     note_duration = data['noteDuration']
     prime_melodies = data['primeMelodies'] if 'primeMelodies' in data else None
+    preset = integer_presets[data["preset"]] if 'preset' in data else None
     results = []
     for i in range(melody_count):
-        if (prime_melodies):
+        if prime_melodies:
             x = converter.select_primer_notes(key, song_primers, ids_on_key, sequence_length)
         else:
             x = converter.generate_random_notes(key, sequence_length)
@@ -53,21 +57,22 @@ def predict():
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
         output = model.predict(x, length, sequence_length,
-                                       key, output_classes, is_varied, note_duration, upload_path, prime_melody=prime_melodies)
-        result = output["notes"];
-        stream = output["stream"];
-        similiarity = output["similarity"] if "similarity" in output else None
+                               key, output_classes, is_varied, note_duration, upload_path, prime_melody=prime_melodies,
+                               preset=preset)
+        result = output["notes"]
+        stream = output["stream"]
+        similarity = output["similarity"] if "similarity" in output else None
         # Get quarterLengths of the stream
         quarter_lengths = stream.highestTime
         # Convert quarter lengths to seconds
-        duration = ((quarter_lengths) / DEFAULT_BPM) * 60
+        duration = (quarter_lengths / DEFAULT_BPM) * 60
         notes = [
             {
                 "name": x.nameWithOctave,
                 "duration": x.quarterLength,
             } for x in result
         ]
-        if (prime_melodies):
+        if prime_melodies:
             names = [note['name'] for note in notes]
             scale = list(set(names))
             scale_order = {
@@ -91,15 +96,15 @@ def predict():
         else:
             scale = converter.get_scale(key=key, notes_as_ints=False)
 
-        print(scale)
         results.append({
             "notes": notes,
             "path": upload_path + ".mid",
             "scale": scale,
             "duration": duration,
-            "title": f"{data['key']} Melody #{i+1}",
-            "similarity": similiarity
+            "title": f"{data['key']} Melody #{i + 1}",
+            "similarity": similarity
         })
+        results.sort(key=lambda x: -x["similarity"])
     return jsonify(results)
 
 
