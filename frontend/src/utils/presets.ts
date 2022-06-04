@@ -1,7 +1,7 @@
 const presets = [
   {
     id: 2,
-    path: "/presets/AMaj.mp3",
+    path: "/presets/Amaj.mp3",
     key: "Amaj",
     name: "Preset 1 (A major)",
   },
@@ -12,7 +12,7 @@ const presets = [
   },
   {
     id: 0,
-    path: "/presets/AsharpMaj.mp3",
+    path: "/presets/Asharpmaj.mp3",
     name: "Preset 3 (A# major)",
   },
   {
@@ -22,7 +22,7 @@ const presets = [
   },
   {
     id: 4,
-    path: "/presets/BMaj.mp3",
+    path: "/presets/Bmaj.mp3",
     name: "Preset 5 (B major)",
   },
   {
@@ -32,7 +32,7 @@ const presets = [
   },
   {
     id: 8,
-    path: "/presets/CMaj.mp3",
+    path: "/presets/Cmaj.mp3",
     name: "Preset 7 (C major)",
   },
   {
@@ -42,7 +42,7 @@ const presets = [
   },
   {
     id: 6,
-    path: "/presets/CsharpMaj.mp3",
+    path: "/presets/Csharpmaj.mp3",
     name: "Preset 9 (C# major)",
   },
   {
@@ -52,7 +52,7 @@ const presets = [
   },
   {
     id: 12,
-    path: "/presets/DMaj.mp3",
+    path: "/presets/Dmaj.mp3",
     name: "Preset 11 (D major)",
   },
   {
@@ -62,17 +62,17 @@ const presets = [
   },
   {
     id: 10,
-    path: "/presets/DsharpMaj.mp3",
+    path: "/presets/Dsharpmaj.mp3",
     name: "Preset 13 (D# major)",
   },
   {
     id: 11,
-    path: "/presets/DsharpMin.mp3",
+    path: "/presets/Dsharpmin.mp3",
     name: "Preset 14 (D# minor)",
   },
   {
     id: 14,
-    path: "/presets/EMaj.mp3",
+    path: "/presets/Emaj.mp3",
     name: "Preset 15 (E major)",
   },
   {
@@ -82,7 +82,7 @@ const presets = [
   },
   {
     id: 18,
-    path: "/presets/FMaj.mp3",
+    path: "/presets/Fmaj.mp3",
     name: "Preset 17 (F major)",
   },
   {
@@ -92,7 +92,7 @@ const presets = [
   },
   {
     id: 16,
-    path: "/presets/FsharpMaj.mp3",
+    path: "/presets/Fsharpmaj.mp3",
     name: "Preset 19 (F# major)",
   },
   {
@@ -102,7 +102,7 @@ const presets = [
   },
   {
     id: 22,
-    path: "/presets/GMaj.mp3",
+    path: "/presets/Gmaj.mp3",
     name: "Preset 21 (G major)",
   },
   {
@@ -112,7 +112,7 @@ const presets = [
   },
   {
     id: 20,
-    path: "/presets/GsharpMaj.mp3",
+    path: "/presets/Gsharpmaj.mp3",
     name: "Preset 23 (G# major)",
   },
   {
