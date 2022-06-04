@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import background from "../assets/Home.png";
+import background from "../assets/Home.jpg";
 import { LogoWithText } from "../assets/logo/Logo";
 
 function HomeLayout() {
