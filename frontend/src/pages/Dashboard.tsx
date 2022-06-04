@@ -169,7 +169,7 @@ function Dashboard() {
     isSubmitting,
   } = useFormik({
     initialValues: {
-      variedRhythm: false,
+      variedRhythm: true,
       melodyCount: 1,
       key: keyOptions[0],
       sound: "acoustic_grand_piano" as InstrumentName,
@@ -201,7 +201,7 @@ function Dashboard() {
             <Grid item xs={12} sm={6} md={4} className="sm:pr-3">
               <DashboardCard title="Melody Characteristics">
                 <Grid container>
-                  <Grid item xs={8}>
+                  <Grid item xs={10}>
                     <TextField
                       fullWidth
                       label="No. of Melodies"
@@ -218,7 +218,7 @@ function Dashboard() {
                       helperText={errors.melodyCount ?? " "}
                     />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={2}>
                     <Tooltip
                       title="Prime the melodies with a section of the model's training set; this will usually make the melodies sound better. Normally, the melodies are primed with random notes within the selected key."
                       placement="top"

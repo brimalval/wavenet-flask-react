@@ -241,7 +241,7 @@ const MelodyList: React.FC<Props> = (props) => {
                     {/* TODO: Add color indicating similarity */}
                     {song.similarity === null
                       ? "N/A"
-                      : song.similarity.toFixed(2)}
+                      : (song.similarity*100).toFixed(2) + "%"}
                   </Typography>
                 </Tooltip>
               </TableCell>
