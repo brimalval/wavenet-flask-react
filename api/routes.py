@@ -46,7 +46,8 @@ def predict():
     note_duration = data['noteDuration']
     prime_melodies = data['primeMelodies'] if 'primeMelodies' in data else None
     if data['preset'] >= 0:
-        preset = integer_presets[data["preset"]]
+        preset = integer_presets[data["preset"]]["melody"]
+        key = integer_presets[data["preset"]]["key"]
     else:
         preset = None
     results = []
