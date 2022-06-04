@@ -45,7 +45,10 @@ def predict():
     is_varied = data['variedRhythm']
     note_duration = data['noteDuration']
     prime_melodies = data['primeMelodies'] if 'primeMelodies' in data else None
-    preset = integer_presets[data["preset"]] if 'preset' in data else None
+    if data['preset'] >= 0:
+        preset = integer_presets[data["preset"]]
+    else:
+        preset = None
     results = []
     for i in range(melody_count):
         if prime_melodies:
