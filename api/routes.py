@@ -108,7 +108,8 @@ def predict():
             "title": f"{data['key']} Melody #{i + 1}",
             "similarity": similarity
         })
-        results.sort(key=lambda x: -x["similarity"])
+        if data['preset'] >= 0:
+            results.sort(key=lambda x: -x["similarity"])
     return jsonify(results)
 
 
