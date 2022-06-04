@@ -70,7 +70,7 @@ class Model:
             1, sequence_length, 1).astype("float32") / (output_classes - 1)
         for i in range(note_length):
             y = self.model.predict(x_data).ravel()
-            if (not prime_melody):
+            if not prime_melody:
                 arg_y = self.filter_note_with_key(y, key)
             else:
                 arg_y = np.argmax(y)
@@ -85,8 +85,11 @@ class Model:
         stream_result = self.converter.create_song_from_ints(
             output, is_varied, note_duration, file_name)
 
-        # TODO: Add similarity score
-        similarity = self.converter.calculate_similarity(preset, output) if preset else None
+        if preset:
+            similarity = self.converter.calculate_similarity(preset, output)
+        else:
+            similarity = None
+
         return {
             "similarity": similarity,
             "notes": notes_result,

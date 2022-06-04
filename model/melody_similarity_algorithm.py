@@ -78,7 +78,7 @@ def pitch_similarity(x1, x2, pitch_diff_limit):
     :param pitch_diff_limit: maximum limit of pitch difference
     :return: pitch similarity score
     """
-    return 1 - abs(x1 - x2) / pitch_diff_limit
+    return 1 - abs(x1 - x2) ** 0.5 / pitch_diff_limit ** 0.5
 
 
 def inclination_similarity(inclination_1, inclination_2, inclination_diff_limit):
@@ -89,7 +89,7 @@ def inclination_similarity(inclination_1, inclination_2, inclination_diff_limit)
     :param inclination_diff_limit: maximum limit of inclination difference
     :return: inclination similarity score
     """
-    return 1 - abs(inclination_1 - inclination_2) / inclination_diff_limit
+    return 1 - abs(inclination_1 - inclination_2) ** 0.5 / inclination_diff_limit ** 0.5
 
 
 def unit_weighted_pitch_similarity(x1, x2, pitch_diff_limit, durations):
@@ -148,8 +148,7 @@ def get_similarity_percentage(preset, melody):
             complex_similarity(0.5, 0.5, relative_pitch_1, relative_pitch_2, comparative_line_1, comparative_line_2,
                                pitch_limit, inclination_limit, duration_1))
 
-    normalization = (np.max(results) - 0.6) / (1 - 0.6)
-    return normalization
+    return np.max(results)
 
 
 if __name__ == "__main__":
@@ -157,8 +156,8 @@ if __name__ == "__main__":
               49, 83, 108, 84, 84, 49, 108, 47, 68, 84, 84, 103, 48, 58, 67, 67, 68, 57, 68, 73, 83, 59, 83, 73, 83,
               48, 49]
 
-    comp_2 = [58, 103, 118, 68, 59, 118, 108, 94, 68, 93, 103, 83, 103, 108, 49, 83, 83, 93, 103, 58, 73, 83, 68,
-              49, 83, 108, 84, 84, 30, 108, 47, 68, 84, 40, 103, 48, 58, 67, 67, 68, 57, 68, 73, 83, 59, 83, 73, 83,
+    comp_2 = [38, 103, 118, 68, 29, 118, 108, 94, 68, 93, 103, 83, 103, 108, 49, 83, 83, 93, 103, 58, 73, 83, 68,
+              49, 83, 108, 84, 84, 49, 108, 47, 68, 84, 84, 103, 48, 58, 67, 67, 68, 57, 68, 73, 83, 59, 83, 73, 83,
               48, 49]
 
     m1, d1 = pitch_note_split(comp_1)
@@ -166,6 +165,20 @@ if __name__ == "__main__":
 
     rp_1 = transform_relative_pitch(m1)
     rp_2 = transform_relative_pitch(m2)
+
+    initial_timeline_1 = [0]
+
+    for index, duration in enumerate(d1[:-1]):
+        initial_timeline_1.append(duration + initial_timeline_1[index])
+
+    initial_timeline_2 = [0]
+
+    for index, duration in enumerate(d2[:-1]):
+        initial_timeline_2.append(duration + initial_timeline_2[index])
+
+    foo = [initial_timeline_1, rp_1, initial_timeline_2, rp_2, ]
+
+    np.savetxt("bars.csv", np.transpose(foo), delimiter=",")
 
     cl_1 = relationship_comparative_line(rp_1, d1)
     cl_2 = relationship_comparative_line(rp_2, d2)
