@@ -20,7 +20,7 @@ class Model:
 
         Args:
             directory (string): The directory that the model's weights are stored in.
-        """        
+        """
         self.model.built = True
         self.model.load_weights(directory)
 
@@ -33,7 +33,7 @@ class Model:
 
         Returns:
             int[]: The filtered output of the model.
-        """        
+        """
         key = self.converter.get_scale(key)
         max_note_prob = 0
         max_note = key[0]
@@ -44,7 +44,8 @@ class Model:
                     max_note = k + i
         return max_note
 
-    def predict(self, x_data, note_length, sequence_length,  key, output_classes, is_varied, note_duration=None, file_name=None, get_stream=True, prime_melody=False):
+    def predict(self, x_data, note_length, sequence_length, key, output_classes, is_varied, note_duration=None,
+                file_name=None, prime_melody=False, preset=None):
         """Gives a series of notes based on the input data.
 
         Args:
@@ -59,32 +60,38 @@ class Model:
             the melody will have if is_varied is True. Defaults to None.
             file_name (string, optional): File name that the produced MIDI file will
             be saved as. Defaults to None.
-            get_stream (bool, optional): Whether the Music21 stream should also
-            be returned. Defaults to True.
 
         Returns:
             int[]: The output melody represented as a list of ints.
             (optional) stream: The Music21 stream generated. Returned if get_stream is True.
-        """        
+        """
         output = []
         x_data = np.array(x_data).reshape(
-            1, sequence_length, 1).astype("float32") / (output_classes-1)
+            1, sequence_length, 1).astype("float32") / (output_classes - 1)
         for i in range(note_length):
             y = self.model.predict(x_data).ravel()
-            if (not prime_melody):
+            if not prime_melody:
                 arg_y = self.filter_note_with_key(y, key)
             else:
                 arg_y = np.argmax(y)
             output.append(arg_y)
             x = x_data.ravel().tolist()
             x.pop(0)
-            x.append(arg_y / (output_classes-1))
+            x.append(arg_y / (output_classes - 1))
             x_data = np.array(x).reshape(
                 1, sequence_length, 1).astype("float32")
 
         notes_result = [self.converter.map_int_to_note(int_note, is_varied, note_duration) for int_note in output]
         stream_result = self.converter.create_song_from_ints(
             output, is_varied, note_duration, file_name)
-        if get_stream:
-            return notes_result, stream_result
-        return notes_result
+
+        if preset:
+            similarity = self.converter.calculate_similarity(preset, output)
+        else:
+            similarity = None
+
+        return {
+            "similarity": similarity,
+            "notes": notes_result,
+            "stream": stream_result
+        }

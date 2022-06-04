@@ -2,6 +2,7 @@ from music21 import note, stream, converter
 from bidict import bidict
 import random
 import numpy as np
+from model.melody_similarity_algorithm import get_similarity_percentage
 
 notes_map = bidict({
     'C': 0,
@@ -107,6 +108,8 @@ class Converter:
         random_index = random.randint(0, len(primers) - 1 - sequence_length)
         return primers[random_index:random_index + sequence_length]
 
+    def calculate_similarity(self, preset, melody):
+        return get_similarity_percentage(preset, melody)
 
 # Test code
 if __name__ == "__main__":
