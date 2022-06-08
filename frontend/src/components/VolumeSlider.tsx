@@ -8,6 +8,7 @@ type Props = {
 };
 
 const VolumeSlider: React.FC<Props> = (props) => {
+  // Default is 1
   const MAX_VOLUME = 8;
   const { player } = props;
   const [volume, setVolume] = useState((player.getVolume() / MAX_VOLUME) * 100);
@@ -18,6 +19,7 @@ const VolumeSlider: React.FC<Props> = (props) => {
   ) => void;
   const handleSliderChange: SliderChangeEvent = (event, value) => {
     console.log(player.getInstrument(), value);
+    // Setting the volume as a percentage of the max volume
     player.setVolume((Number(value) / 100) * MAX_VOLUME);
     setVolume(value as number);
   };

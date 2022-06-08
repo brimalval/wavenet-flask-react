@@ -1,3 +1,4 @@
+// Generic interface for music player services
 export interface IMusicPlayer {
   getCurrentTime(): number;
   getDuration(): number;

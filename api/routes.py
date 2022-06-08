@@ -8,6 +8,7 @@ from model.converter import Converter
 
 api = Blueprint('api', __name__)
 
+# Parameters for the model
 res_channel = 128
 skip_channel = 256
 stack_size = 3
@@ -17,6 +18,7 @@ output_classes = 120
 sequence_length = 128
 model = Model(res_channel, skip_channel, stack_size, kernel_size,
               layer_size, output_classes, sequence_length)
+# Loading the weights of the model
 model.load("model/last_trained/weights_only.h5")
 converter = Converter()
 
@@ -29,6 +31,7 @@ with open(f'model/utils/songs_mapped_int.npy', 'rb') as f:
 with open(f'model/utils/ids_on_key.npy', 'rb') as f:
     ids_on_key = np.load(f, allow_pickle=True)[()]
 
+# Load the integer array equivalents of the MIDI presets
 with open("presets/presets.npy", 'rb') as f:
     integer_presets = np.load(f, allow_pickle=True)[()]
 
@@ -45,11 +48,14 @@ def predict():
     is_varied = data['variedRhythm']
     note_duration = data['noteDuration']
     prime_melodies = data['primeMelodies'] if 'primeMelodies' in data else None
+    # Get the ID of the preset that the user requested, if it exists
     if data['preset'] >= 0:
         preset = integer_presets[data["preset"]]["melody"]
         key = integer_presets[data["preset"]]["key"]
     else:
         preset = None
+    # Array of objects containing information about the generated melodies
+    # that are relevant to the front-end
     results = []
     for i in range(melody_count):
         if prime_melodies:
@@ -60,6 +66,8 @@ def predict():
         filename = f"{key}_{i}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
         filename = filename.replace("#", "sharp")
         upload_path = f"{current_app.config['UPLOAD_FOLDER']}/{filename}"
+        # Prediction will output the notes, the MIDI stream of the song, and similarity score
+        # if applicable
         output = model.predict(x, length, sequence_length,
                                key, output_classes, is_varied, note_duration, upload_path, prime_melody=prime_melodies,
                                preset=preset)
@@ -113,6 +121,7 @@ def predict():
     return jsonify(results)
 
 
+# Routes used for testing the API
 @api.route('/')
 def index():
     return {

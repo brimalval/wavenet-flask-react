@@ -7,6 +7,7 @@ import Soundfont, {
   Player as InstrumentPlayer,
 } from "soundfont-player";
 
+// ToneJS/Soundfont-player implementation of IMusicPlayer
 @injectable()
 export class ToneJSMusicPlayer implements IMusicPlayer {
   private soundFont: InstrumentPlayer | null;

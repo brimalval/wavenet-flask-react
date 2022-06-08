@@ -1,3 +1,4 @@
+// Set of instrument names supported by Soundfont-player
 const instrumentNames = [
    "accordion",
    "acoustic_bass",

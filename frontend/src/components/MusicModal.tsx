@@ -53,6 +53,7 @@ const MusicModal: React.FC<Props> = (props) => {
     });
   const theme = getTheme();
 
+  // Show loading spinner while song & player are loading
   if (!(player && player.getSong())) {
     return (
       <Modal {...modalProps} className="flex justify-center items-center">
