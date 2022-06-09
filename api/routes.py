@@ -113,7 +113,7 @@ def predict():
             "path": upload_path + ".mid",
             "scale": scale,
             "duration": duration,
-            "title": f"{data['key']} Melody #{i + 1}",
+            "title": f"{key} Melody #{i + 1}",
             "similarity": similarity
         })
         if data['preset'] >= 0:
