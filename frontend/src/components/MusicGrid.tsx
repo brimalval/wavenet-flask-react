@@ -40,6 +40,7 @@ const MusicGrid: React.FC<Props> = (props) => {
     }
   }, [currentNoteRef, eventIndex]);
 
+  // Change the event index whenever the player plays a note
   useEffect(() => {
     player.setPlayCallback((eventIndex) => {
       setEventIndex(eventIndex);

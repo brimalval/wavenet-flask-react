@@ -1,3 +1,5 @@
+// Array of objects that point to the preset files
+// used by the frontend to show the available presets
 const presets = [
   {
     id: 2,
